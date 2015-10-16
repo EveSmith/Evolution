@@ -1,22 +1,25 @@
-#ifndef ENVIRONMENT
-#define ENVIRONMENT
+#ifndef ENVIRONMENT_H
+#define ENVIRONMENT_H
 
+#include <string>
+#include <vector>
 #include "EnviroCell.h"
 
 
-class Envir{
+class Environment{
 public:
-	Envir(int WIDTH, int HEIGHT);
+	Environment(int WIDTH, int HEIGHT);
+	~Environment();
 
-	void resize(int NEW_WIDTH, int NEW_HEIGHT);
-
-	void display();
-
+	std::string print();
 
 private:
-	Cell* matrix;
+	int width;
+	int height;
+	int size;
+	std::vector<Cell*> matrix;
 };
 
 
 
-#endif //ENVIRONMENT
+#endif //ENVIRONMENT_H

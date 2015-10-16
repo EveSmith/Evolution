@@ -66,9 +66,15 @@
   <ItemGroup>
     <ClInclude Include="EnviroCell.h" />
     <ClInclude Include="Environment.h" />
+    <ClInclude Include="Organism.h" />
+    <ClInclude Include="Server.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EnviroCell.cpp" />
+    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Organism.cpp" />
+    <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
