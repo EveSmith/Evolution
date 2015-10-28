@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include "Organism.h"
 #include <vector>
+#include <string>
 
 /*
 Contains the Environment and knows of all organisms.
@@ -16,6 +17,8 @@ public:
 	Server(int WIDTH, int HEIGHT, int INIT_SIZE);
 	~Server();
 
+	std::string printEnviron(bool grid=true);
+	std::string printOrgList();
 
 private:
 	Environment* E;

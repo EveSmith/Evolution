@@ -32,20 +32,39 @@ Environment::Environment(int WIDTH, int HEIGHT){
 }
 
 Environment::~Environment(){
-	for (int i = 0; i < matrix.size; i++){
+	for (int i = 0; i < matrix.size(); i++){
 		delete matrix[i];
 	}
 }
 
 
-std::string Environment::print(){
+std::string Environment::printList(){
 	std::string info;
 	for (int i = 0; i < size; i++){
 		int col = (i % width);
 		int row = (i - col) / height;
 		info.append("(" + std::to_string(col) + "," + std::to_string(row) + "):\n");
-		info.append(matrix[i]->printInfo()+"\n\n");
+		info.append(matrix[i]->printInfoList()+"\n\n");
 	}
 	return info;
+}
+
+std::string Environment::printGrid(){
+	std::string grid;
+	for (int i = 0; i < height; i++){
+		for (int j = 0; j < width; j++){
+			grid.append("+---");
+		}
+		grid.append("+\n");
+		for (int j = 0; j < width; j++){
+			grid.append("|"+matrix[(i*width)+j]->printInfoGrid());
+		}
+		grid.append("|\n");
+	}
+	for (int j = 0; j < width; j++){
+		grid.append("+---");
+	}
+	grid.append("+\n");
+	return grid;
 }
 

@@ -39,11 +39,15 @@ Organism::Organism(std::string str){
 }
 
 std::string Organism::print(){
-	std::string info = "Organism:\n\tPosition: " +
+	std::string info = "Organism: "+std::to_string(ID)+"\n\tPosition: " +
 		std::to_string(position[0]) + "," + std::to_string(position[1]) + "\n"+
 		"\tHealth: " + std::to_string(health) + "\n"
 		"\tGoal Value: " + std::to_string(goalValue) + "\n";
 	return info;
+}
+
+int Organism::getID(){
+	return ID;
 }
 
 void Organism::adjustHealth(int delta){

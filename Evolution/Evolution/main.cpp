@@ -1,7 +1,7 @@
 #include <random>
 #include <string>
 #include <iostream>
-#include "Environment.h"
+#include "Server.h"
 
 using namespace std;
 
@@ -10,10 +10,11 @@ int main(){
 	srand(SEED);
 
 
-	Environment environment = Environment(5, 5);
+	Server server = Server(5, 5, 5);
 
 
-	cout << environment.print();
+	cout << server.printEnviron();
+	cout << server.printOrgList();
 
 	cout << "Press any key...";
 	cin.get();

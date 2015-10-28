@@ -12,6 +12,7 @@ public:
 
 	std::string print();
 
+	int getID();
 	void adjustHealth(int delta);
 	void move();
 

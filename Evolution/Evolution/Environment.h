@@ -11,7 +11,8 @@ public:
 	Environment(int WIDTH, int HEIGHT);
 	~Environment();
 
-	std::string print();
+	std::string printList();
+	std::string printGrid();
 
 private:
 	int width;
