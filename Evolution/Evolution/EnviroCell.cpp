@@ -28,7 +28,7 @@ std::string Cell::printInfoList(){
 std::string Cell::printInfoGrid(){
 	std::string info = std::to_string(int(value)) + ":";
 	if (!orgsPresent.empty()){
-		info.append(std::to_string(orgsPresent[0]));
+		info.append(std::to_string(orgsPresent.size()));
 	}
 	else{
 		info.append(" ");
@@ -36,20 +36,29 @@ std::string Cell::printInfoGrid(){
 	return info;
 }
 
+
+
 float Cell::getValue(){
 	return value;
 }
 
-void Cell::insertOrg(int org){
-	std::vector<int>::iterator position = find(orgsPresent.begin(), orgsPresent.end(), org);
+//Indicates whether org is present in cell
+bool Cell::containsOrg(int id){
+	return (find(orgsPresent.begin(), orgsPresent.end(), id) != orgsPresent.end());
+}
+
+//If org is not already present, add it.
+void Cell::insertOrg(int id){
+	std::vector<int>::iterator position = find(orgsPresent.begin(), orgsPresent.end(), id);
 	if ( position == orgsPresent.end()){
-		orgsPresent.push_back(org);
+		orgsPresent.push_back(id);
 	}
 }
 
-void Cell::removeOrg(int org){
-	std::vector<int>::iterator position = find(orgsPresent.begin(), orgsPresent.end(), org);
-	if (position == orgsPresent.end()){
+//Finds specified org and removes it
+void Cell::removeOrg(int id){
+	std::vector<int>::iterator position = find(orgsPresent.begin(), orgsPresent.end(), id);
+	if (position != orgsPresent.end()){
 		orgsPresent.erase(position);
 	}
 }

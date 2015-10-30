@@ -14,6 +14,14 @@ public:
 	std::string printList();
 	std::string printGrid();
 
+	int findOrg(int id);
+	int getValue(int x, int y);
+
+	void addOrg(int id, int x, int y);
+	void remOrg(int id);
+	void remOrg(int id, int x, int y);
+	void moveOrg(int id, int oldX, int oldY, int newX, int newY);
+
 private:
 	int width;
 	int height;

@@ -12,10 +12,12 @@ public:
 
 	std::string printInfoList();
 	std::string printInfoGrid();
-	float getValue();
 
-	void insertOrg(int org);
-	void removeOrg(int org);
+	float getValue();
+	bool containsOrg(int id);
+
+	void insertOrg(int id);
+	void removeOrg(int id);
 
 
 private:

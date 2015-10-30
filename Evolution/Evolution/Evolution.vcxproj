@@ -66,6 +66,7 @@
   <ItemGroup>
     <ClInclude Include="EnviroCell.h" />
     <ClInclude Include="Environment.h" />
+    <ClInclude Include="Messages.h" />
     <ClInclude Include="Organism.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>

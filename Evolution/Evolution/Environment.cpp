@@ -68,3 +68,43 @@ std::string Environment::printGrid(){
 	return grid;
 }
 
+//Returns matrix index of specified organism (not in coordinate form)
+//VERY SLOW!!! OPTIMIZE LATER!!!
+int Environment::findOrg(int id){
+	for (int i = 0; i < matrix.size(); i++){
+		if (matrix[i]->containsOrg(id)){
+			return i;
+		}
+	}
+	return -1;
+}
+
+int Environment::getValue(int x, int y){
+	return matrix[width*y + x]->getValue();
+}
+
+
+//Put the ID of the organism into the specified Cell
+void Environment::addOrg(int id, int x, int y){
+	matrix[y*width + x]->insertOrg(id);
+}
+
+//Find and remove organism
+void Environment::remOrg(int id){
+	for (int i = 0; i < matrix.size(); i++){
+		if (matrix[i]->containsOrg(id)){
+			matrix[i]->removeOrg(id);
+		}
+	}
+}
+
+//Remove organism from specified location
+void Environment::remOrg(int id, int x, int y){
+	matrix[y*width + x]->removeOrg(id);
+}
+
+//Relocates organism
+void Environment::moveOrg(int id, int oldX, int oldY, int newX, int newY){
+	this->addOrg(id, newX, newY);
+	this->remOrg(id, oldX, oldY);
+}
