@@ -26,7 +26,7 @@ std::string Cell::printInfoGrid(){
 		info = " " + std::to_string(orgsPresent.size()) + " ";
 	}
 	else{
-		info.append(" ");
+		info.append("   ");
 	}
 	
 	return info;

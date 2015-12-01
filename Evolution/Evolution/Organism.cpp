@@ -11,15 +11,15 @@ Organism::Organism(){
 	this->health = 100;
 
 	//Generate some length of DNA (currently length 1)
-	this->DNA = "";
+	DNA = "";
 	for (int i = 0; i < 1; i++){
-		this->DNA.append(std::to_string(rand() % 10));
+		DNA.append(std::to_string(rand() % 10));
 	}
 
 	//set org position to 0,0
-	this->position.fill(0);
+	position.fill(0);
 
-	this->pendingUpdate = { true, 0, 0 };
+	pendingServerUpdate = { true, 0, 0 };
 }
 
 Organism::Organism(int initX, int initY){
@@ -30,16 +30,16 @@ Organism::Organism(int initX, int initY){
 	this->health = 100;
 
 	//Generate some length of DNA (currently length 1)
-	this->DNA = "";
+	DNA = "";
 	for (int i = 0; i < 1; i++){
-		this->DNA.append(std::to_string(rand() % 10));
+		DNA.append(std::to_string(rand() % 10));
 	}
 
 	//set org position to 0,0
-	this->position[0] = initX;
-	this->position[1] = initY;
+	position[0] = initX;
+	position[1] = initY;
 
-	this->pendingUpdate = { true, 0, 0 };
+	pendingServerUpdate = { true, 0, 0 };
 }
 
 Organism::Organism(std::string str){
@@ -49,12 +49,12 @@ Organism::Organism(std::string str){
 	this->health = 100;
 
 	//set DNA
-	this->DNA = str;
+	DNA = str;
 
 	//set org position to 0,0
-	this->position.fill(0);
+	position.fill(0);
 
-	this->pendingUpdate = { true, 0, 0 };
+	pendingServerUpdate = { true, 0, 0 };
 }
 
 std::string Organism::print(){
@@ -67,59 +67,99 @@ std::string Organism::print(){
 
 
 int Organism::getID(){
-	return this->ID;
+	return ID;
 }
 
 int Organism::getX(){
-	return this->position[0];
+	return position[0];
 }
 
 int Organism::getY(){
-	return this->position[1];
+	return position[1];
 }
 
 
 void Organism::receiveUpdate(ServerUpdate update){
-	this->pendingUpdate = update;
+	this->pendingServerUpdate = update;
 }
 
 void Organism::checkUpdates(){
-	std::cout << "Organism is checking for updates.\n";
-	if (!this->pendingUpdate.checked){
-		this->position[0] = this->pendingUpdate.newX;
-		this->position[1] = this->pendingUpdate.newY;
+	if (!pendingServerUpdate.checked){
+		position[0] = pendingServerUpdate.newX;
+		position[1] = pendingServerUpdate.newY;
 	}
-	this->pendingUpdate.checked = true;
-	std::cout << "Organism is done checking for updates.\n";
+	pendingServerUpdate.checked = true;
 }
 
 void Organism::adjustHealth(int delta){
-	this->health += delta;
+	health += delta;
 }
 
-
-//CHANGE HARD CODED PARTS!!!!
-void Organism::move(){
-	int direction = rand() % 4;
-	if (direction == 0 && this->position[0]!=4){ this->position[0]++; }
-	else if (direction = 1 && this->position[1]!=4){ this->position[1]++; }
-	else if (direction = 2 && this->position[0] != 0){ this->position[0]--; }
-	else if (direction = 3 && this->position[1] != 0){ this->position[1]--; }
-}
 
 //Decide on action, send update to server
 void Organism::sendUpdate(std::queue<OrgUpdate> &inbox){
-	OrgUpdate update;
-	update.oldX = this->position[0];
-	update.oldY = this->position[1];
+	inbox.push(pendingOrgUpdate);
+}
 
-	this->move();
+void Organism::updateSelf(){
+	pendingOrgUpdate.senderID = ID;
 
-	update.senderID = this->ID;
-	update.newX = this->position[0];
-	update.newY = this->position[1];
+	pendingOrgUpdate.oldX = position[0];
+	pendingOrgUpdate.oldY = position[1];
 
-	std::cout << "Org " + std::to_string(this->ID) + " is accessing server inbox.\n";
-	inbox.push(update);
-	std::cout << "Org " + std::to_string(this->ID) + " has finished accessing server inbox.\n";
+	reason();
+
+	while (!actionPlan.empty()){
+		if (actionPlan.front() == "Move"){move(); actionPlan.pop();
+		std::cout << "Organism " << ID << " moved!" << std::endl;
+		}
+		else if (actionPlan.front() == "Eat"){ eat(); actionPlan.pop();
+		std::cout << "Organism " << ID << " ate!" << std::endl;
+		}
+		else if (actionPlan.front() == "Mate"){ mate(0); actionPlan.pop();
+		std::cout << "Organism " << ID << " tried to mate!" << std::endl;
+		}
+		else if (actionPlan.front() == "Attack"){ attack(0); actionPlan.pop();
+		std::cout << "Organism " << ID << " tried to attack!" << std::endl;
+		}
+	}
+	std::cout << std::endl;
+
+	pendingOrgUpdate.health = health;
+}
+
+
+//Currently completely blind and random.
+void Organism::reason(){
+	for (int i = 0; i < forethought; i++){
+		int action = rand() % 4;
+		if (action == 0){ actionPlan.push("Move"); }
+		else if (action == 1){ actionPlan.push("Eat"); }
+		else if (action == 2){ actionPlan.push("Mate"); }
+		else if (action == 3){ actionPlan.push("Attack"); }
+	}
+}
+
+void Organism::move(){
+	int direction = rand() % 5;
+	if (direction == 0 && position[0] != 4){ position[0]++; }
+	else if (direction = 1 && position[1] != 4){ position[1]++; }
+	else if (direction = 2 && position[0] != 0){ position[0]--; }
+	else if (direction = 3 && position[1] != 0){ position[1]--; }
+	else{};
+
+	pendingOrgUpdate.newX = position[0];
+	pendingOrgUpdate.newY = position[1];
+}
+
+void Organism::eat(){
+
+}
+
+void Organism::mate(int mateID){
+
+}
+
+void Organism::attack(int victimID){
+
 }

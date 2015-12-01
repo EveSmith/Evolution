@@ -26,7 +26,6 @@ std::string Server::printEnviron(bool grid){
 void Server::update(std::queue<OrgUpdate> &inbox){
 	OrgUpdate currUpdate;
 	ServerUpdate servUpdate;
-	std::cout << "Server is accessing server inbox.\n";
 	//For all the messages in inbox...
 	while (!inbox.empty()){
 		//Deal with first message
@@ -40,16 +39,13 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 		E->moveOrg(currUpdate.senderID, currUpdate.oldX, currUpdate.oldY, currUpdate.newX, currUpdate.newY);
 		//Remove message from inbox
 		inbox.pop();
-		std::cout << "Server has finished accessing server inbox.\n";
 
 		//Compile server update
 		servUpdate.newX = currUpdate.newX;
 		servUpdate.newY = currUpdate.newY;
 		servUpdate.checked = false;
 		//Org list is a map, with IDs as keys
-		std::cout << "Server is sending message to organism.\n";
 		orgList[currUpdate.senderID]->receiveUpdate(servUpdate);
-		std::cout << "Server is finished sending message to organism.\n";
 	}
 }
 

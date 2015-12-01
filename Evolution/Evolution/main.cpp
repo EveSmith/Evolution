@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <time.h>
 #include "Server.h"
 
 std::queue<OrgUpdate> SERVER_INBOX;
@@ -23,7 +24,7 @@ std::string printOrgList(){
 
 
 int main(){
-	int SEED = 0;
+	int SEED = time(NULL);
 	srand(SEED);
 
 	int WIDTH = 5;
@@ -41,13 +42,13 @@ int main(){
 	while (input != "end"){
 		//TO DO: CHANGE TO MULTITHREADED "SIMULTANEOUS" BEHAVIOR
 		for (int i = 0; i < ORG_LIST.size(); i++){
+			ORG_LIST[i]->updateSelf();
 			ORG_LIST[i]->sendUpdate(SERVER_INBOX);
 		}
-		std::cout << printOrgList();
 		server->update(SERVER_INBOX);
 
-		std::cout << server->printEnviron();
 		std::cout << printOrgList();
+		std::cout << server->printEnviron();
 
 		std::cout << "Enter 'end' to end. Enter anything else to continue...\n";
 		std::cin >> input;

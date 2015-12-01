@@ -85,10 +85,9 @@ void Environment::addOrg(int id, int x, int y){
 
 //Find and remove organism
 void Environment::remOrg(int id){
-	for (int i = 0; i < matrix.size(); i++){
-		if (matrix[i]->containsOrg(id)){
-			matrix[i]->removeOrg(id);
-		}
+	int orgIndex = findOrg(id);
+	if (orgIndex != -1){
+		matrix[orgIndex]->removeOrg(id);
 	}
 }
 
@@ -97,8 +96,9 @@ void Environment::remOrg(int id, int x, int y){
 	matrix[y*width + x]->removeOrg(id);
 }
 
+
 //Relocates organism
 void Environment::moveOrg(int id, int oldX, int oldY, int newX, int newY){
+	this->remOrg(id);
 	this->addOrg(id, newX, newY);
-	this->remOrg(id, oldX, oldY);
 }
