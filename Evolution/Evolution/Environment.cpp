@@ -23,10 +23,7 @@ Environment::Environment(int WIDTH, int HEIGHT){
 		float xOffset = 0.0;
 		for (int x = 0; x < width; x++){
 			xOffset += increment;
-			//generate new Cell with specific value.
-			//CURRENTLY GENERATES RANDOMLY, WILL CHANGE TO 
-			//PERLIN NOISE GENERATION LATER
-			matrix.push_back(new Cell(rand() % int(maxValue)));
+			matrix.push_back(new Cell());
 		}
 	}
 }
@@ -79,9 +76,6 @@ int Environment::findOrg(int id){
 	return -1;
 }
 
-int Environment::getValue(int x, int y){
-	return matrix[width*y + x]->getValue();
-}
 
 
 //Put the ID of the organism into the specified Cell

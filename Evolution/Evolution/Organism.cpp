@@ -1,53 +1,60 @@
 #include "Organism.h"
+#include <iostream>
 
-int UNIVERSAL_ID = 0;
+static int UNIVERSAL_ID = 0;
 
 Organism::Organism(){
 	//Unique ID for each organism, hopefully.
-	ID = UNIVERSAL_ID;
+	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
-	health = 100;
+	this->health = 100;
 
 	//Generate some length of DNA (currently length 1)
-	DNA = "";
+	this->DNA = "";
 	for (int i = 0; i < 1; i++){
-		DNA.append(std::to_string(rand() % 10));
+		this->DNA.append(std::to_string(rand() % 10));
 	}
 
 	//set org position to 0,0
-	position.fill(0);
+	this->position.fill(0);
+
+	this->pendingUpdate = { true, 0, 0 };
 }
 
 Organism::Organism(int initX, int initY){
 	//Unique ID for each organism, hopefully.
-	ID = UNIVERSAL_ID;
+	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
-	health = 100;
+	this->health = 100;
 
 	//Generate some length of DNA (currently length 1)
-	DNA = "";
+	this->DNA = "";
 	for (int i = 0; i < 1; i++){
-		DNA.append(std::to_string(rand() % 10));
+		this->DNA.append(std::to_string(rand() % 10));
 	}
 
 	//set org position to 0,0
-	position[0] = initX;
-	position[1] = initY;
+	this->position[0] = initX;
+	this->position[1] = initY;
+
+	this->pendingUpdate = { true, 0, 0 };
 }
 
 Organism::Organism(std::string str){
-	ID = UNIVERSAL_ID;
+	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
-	health = 100;
+	this->health = 100;
 
 	//set DNA
-	DNA = str;
+	this->DNA = str;
 
 	//set org position to 0,0
-	position.fill(0);
+	this->position.fill(0);
+
+	this->pendingUpdate = { true, 0, 0 };
 }
 
 std::string Organism::print(){
@@ -60,56 +67,59 @@ std::string Organism::print(){
 
 
 int Organism::getID(){
-	return ID;
+	return this->ID;
 }
 
 int Organism::getX(){
-	return position[0];
+	return this->position[0];
 }
 
 int Organism::getY(){
-	return position[1];
+	return this->position[1];
 }
 
 
-//NOTHING FOR NOW BECAUSE ORGS ARE BLIND RANDOM WALKERS
 void Organism::receiveUpdate(ServerUpdate update){
-	position[0] = update.newX;
-	position[1] = update.newY;
-	if ((update.cellValue - std::stoi(DNA)) == 0){
-		adjustHealth(3);
-	}
-	else if ((update.cellValue - std::stoi(DNA)) > 3 || (update.cellValue - std::stoi(DNA)) < -3){
-		adjustHealth(-3);
-	}
+	this->pendingUpdate = update;
 }
 
+void Organism::checkUpdates(){
+	std::cout << "Organism is checking for updates.\n";
+	if (!this->pendingUpdate.checked){
+		this->position[0] = this->pendingUpdate.newX;
+		this->position[1] = this->pendingUpdate.newY;
+	}
+	this->pendingUpdate.checked = true;
+	std::cout << "Organism is done checking for updates.\n";
+}
 
 void Organism::adjustHealth(int delta){
-	health += delta;
+	this->health += delta;
 }
 
 
 //CHANGE HARD CODED PARTS!!!!
 void Organism::move(){
 	int direction = rand() % 4;
-	if (direction == 0 && position[0]!=4){ position[0]++; }
-	else if (direction = 1 && position[1]!=4){ position[1]++; }
-	else if (direction = 2 && position[0] != 0){ position[0]--; }
-	else if (direction = 3 && position[1] != 0){ position[1]--; }
+	if (direction == 0 && this->position[0]!=4){ this->position[0]++; }
+	else if (direction = 1 && this->position[1]!=4){ this->position[1]++; }
+	else if (direction = 2 && this->position[0] != 0){ this->position[0]--; }
+	else if (direction = 3 && this->position[1] != 0){ this->position[1]--; }
 }
 
 //Decide on action, send update to server
-void Organism::update(std::queue<OrgUpdate> &inbox){
+void Organism::sendUpdate(std::queue<OrgUpdate> &inbox){
 	OrgUpdate update;
-	update.oldX = position[0];
-	update.oldY = position[1];
+	update.oldX = this->position[0];
+	update.oldY = this->position[1];
 
 	this->move();
 
-	update.senderID = ID;
-	update.newX = position[0];
-	update.newY = position[1];
+	update.senderID = this->ID;
+	update.newX = this->position[0];
+	update.newY = this->position[1];
 
+	std::cout << "Org " + std::to_string(this->ID) + " is accessing server inbox.\n";
 	inbox.push(update);
+	std::cout << "Org " + std::to_string(this->ID) + " has finished accessing server inbox.\n";
 }

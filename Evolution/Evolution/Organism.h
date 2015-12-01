@@ -20,9 +20,10 @@ public:
 	int getY();
 
 	void receiveUpdate(ServerUpdate update);
+	void checkUpdates();
 	void adjustHealth(int delta);
 	void move();
-	void update(std::queue<OrgUpdate> &inbox);
+	void sendUpdate(std::queue<OrgUpdate> &inbox);
 
 private:
 	int ID;
@@ -30,7 +31,7 @@ private:
 	std::string DNA;
 
 	std::array<int, 2> position;
-	
+	ServerUpdate pendingUpdate;
 };
 
 

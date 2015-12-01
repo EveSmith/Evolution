@@ -1,5 +1,6 @@
 #include "Server.h"
 #include <algorithm>
+#include <iostream>
 
 
 Server::Server(int WIDTH, int HEIGHT){
@@ -25,21 +26,30 @@ std::string Server::printEnviron(bool grid){
 void Server::update(std::queue<OrgUpdate> &inbox){
 	OrgUpdate currUpdate;
 	ServerUpdate servUpdate;
+	std::cout << "Server is accessing server inbox.\n";
+	//For all the messages in inbox...
 	while (!inbox.empty()){
+		//Deal with first message
 		currUpdate = inbox.front();
+		//If Org has 0 health, kill it
 		if (currUpdate.health <= 0){
 			killOrg(currUpdate.senderID);
 		}
-
-		//confirmUpdate(currUpdate, servUpdate);
+		//confirmUpdate(currUpdate, servUpdate); //Remove and roll into orgs??
+		//Move Org from old position to new position
 		E->moveOrg(currUpdate.senderID, currUpdate.oldX, currUpdate.oldY, currUpdate.newX, currUpdate.newY);
+		//Remove message from inbox
 		inbox.pop();
+		std::cout << "Server has finished accessing server inbox.\n";
+
+		//Compile server update
 		servUpdate.newX = currUpdate.newX;
 		servUpdate.newY = currUpdate.newY;
-		servUpdate.cellValue = E->getValue(servUpdate.newX, servUpdate.newY);
-		//CANNOT STAY LIKE THIS. DEATH/BIRTH WILL MAKE ID!=INDEX!!!
-		std::vector<Organism*>::iterator it = std::find_if(orgList.begin(), orgList.end(), [currUpdate](Organism* org){return org->getID() == currUpdate.senderID; })
-		(*it)->receiveUpdate(servUpdate);
+		servUpdate.checked = false;
+		//Org list is a map, with IDs as keys
+		std::cout << "Server is sending message to organism.\n";
+		orgList[currUpdate.senderID]->receiveUpdate(servUpdate);
+		std::cout << "Server is finished sending message to organism.\n";
 	}
 }
 
@@ -56,14 +66,12 @@ void Server::confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate){
 
 
 void Server::addOrg(Organism* org){
-	orgList.push_back(org);
+	orgList[org->getID()] = org;
 	E->addOrg(org->getID(), org->getX(), org->getY());
 }
 
 
 void Server::killOrg(int id){
 	E->remOrg(id);
-	Organism* copy = *std::find_if(orgList.begin(), orgList.end(), [id](Organism* org){return org->getID() == id; });
-	orgList.erase(std::find_if(orgList.begin(), orgList.end(), [id](Organism* org){return org->getID() == id; }));
-	delete copy;
+	orgList.erase(orgList.find(id));
 }

@@ -41,7 +41,7 @@ int main(){
 	while (input != "end"){
 		//TO DO: CHANGE TO MULTITHREADED "SIMULTANEOUS" BEHAVIOR
 		for (int i = 0; i < ORG_LIST.size(); i++){
-			ORG_LIST[i]->update(SERVER_INBOX);
+			ORG_LIST[i]->sendUpdate(SERVER_INBOX);
 		}
 		std::cout << printOrgList();
 		server->update(SERVER_INBOX);
