@@ -3,7 +3,7 @@
 
 #include "Environment.h"
 #include "Organism.h"
-#include <vector>
+#include <map>
 #include <string>
 
 
@@ -28,7 +28,7 @@ public:
 private:
 	int width, height;
 	Environment* E;
-	std::vector<Organism*> orgList;
+	std::map<int, Organism*> orgList;
 };
 
 

@@ -3,11 +3,6 @@
 #include <algorithm>
 
 Cell::Cell(){
-	value = rand() % 10;
-}
-
-Cell::Cell(float VALUE){
-	value = VALUE;
 }
 
 
@@ -18,7 +13,7 @@ Orgs Present:
 	5678
 */
 std::string Cell::printInfoList(){
-	std::string info = "Value: " + std::to_string(value)+"\nOrgs Present:";
+	std::string info = "Orgs Present:";
 	for (int i = 0; i < orgsPresent.size(); i++){
 		info.append("\t"+std::to_string(orgsPresent[i])+"\n");
 	}
@@ -26,21 +21,17 @@ std::string Cell::printInfoList(){
 }
 
 std::string Cell::printInfoGrid(){
-	std::string info = std::to_string(int(value)) + ":";
+	std::string info;
 	if (!orgsPresent.empty()){
-		info.append(std::to_string(orgsPresent.size()));
+		info = " " + std::to_string(orgsPresent.size()) + " ";
 	}
 	else{
 		info.append(" ");
 	}
+	
 	return info;
 }
 
-
-
-float Cell::getValue(){
-	return value;
-}
 
 //Indicates whether org is present in cell
 bool Cell::containsOrg(int id){

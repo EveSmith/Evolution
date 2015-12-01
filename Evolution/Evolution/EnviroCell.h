@@ -8,12 +8,10 @@
 class Cell{
 public:
 	Cell();
-	Cell(float VALUE);
 
 	std::string printInfoList();
 	std::string printInfoGrid();
 
-	float getValue();
 	bool containsOrg(int id);
 
 	void insertOrg(int id);
@@ -21,7 +19,6 @@ public:
 
 
 private:
-	float value;
 	std::vector<int> orgsPresent;
 
 };

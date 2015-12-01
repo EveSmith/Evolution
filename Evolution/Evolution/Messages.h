@@ -11,8 +11,8 @@ struct OrgUpdate{
 
 //Type sent from server to organisms to update them.
 struct ServerUpdate{
+	bool checked;
 	int newX, newY;
-	int cellValue;
 };
 
 #endif //MESSAGES_H
