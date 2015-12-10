@@ -3,6 +3,11 @@
 
 static int UNIVERSAL_ID = 0;
 
+/*
+Organism handles:
+	Health -- Server does not need to know health of organisms
+*/
+
 Organism::Organism(){
 	//Unique ID for each organism, hopefully.
 	this->ID = UNIVERSAL_ID;
@@ -91,8 +96,12 @@ void Organism::checkUpdates(){
 	pendingServerUpdate.checked = true;
 }
 
-void Organism::adjustHealth(int delta){
-	health += delta;
+void Organism::injure(int amount){
+	health -= amount;
+}
+
+void Organism::heal(int amount){
+	health += amount;
 }
 
 
@@ -124,8 +133,6 @@ void Organism::updateSelf(){
 		}
 	}
 	std::cout << std::endl;
-
-	pendingOrgUpdate.health = health;
 }
 
 

@@ -22,6 +22,7 @@ public:
 
 	void update(std::queue<OrgUpdate> &inbox);
 	void confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate);
+
 	void addOrg(Organism* org);
 	void killOrg(int id);
 

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "EnviroCell.h"
 
 
@@ -20,6 +21,11 @@ public:
 	void remOrg(int id);
 	void remOrg(int id, int x, int y);
 	void moveOrg(int id, int oldX, int oldY, int newX, int newY);
+
+	std::map<std::string, int> getResources(int x, int y);
+	int getResources(int x, int y, std::string resource);
+	void changeResources(int x, int y, std::map<std::string, int> deltaMap);
+	void changeResources(int x, int y, std::string resource, int delta);
 
 private:
 	int width;

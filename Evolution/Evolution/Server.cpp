@@ -31,7 +31,7 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 		//Deal with first message
 		currUpdate = inbox.front();
 		//If Org has 0 health, kill it
-		if (currUpdate.health <= 0){
+		if (!currUpdate.alive){
 			killOrg(currUpdate.senderID);
 		}
 		//confirmUpdate(currUpdate, servUpdate); //Remove and roll into orgs??

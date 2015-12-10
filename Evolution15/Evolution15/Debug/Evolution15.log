@@ -1,0 +1,4 @@
+﻿  Organism.cpp
+c:\users\evie\desktop\evolution\evolution15\evolution15\organism.cpp(194): warning C4018: '<': signed/unsigned mismatch
+  Evolution15.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution15\Debug\Evolution15.exe
+  Evolution15.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution15\Debug\Evolution15.pdb (Partial PDB)

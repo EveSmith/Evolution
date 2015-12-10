@@ -21,7 +21,8 @@ public:
 
 	void receiveUpdate(ServerUpdate update);
 	void checkUpdates();
-	void adjustHealth(int delta);
+	void injure(int amount);
+	void heal(int amount);
 	void determineMovement();
 
 	//Send update to the server
@@ -36,6 +37,9 @@ private:
 
 	//Number of actions organism can plan at once
 	int forethought = 3;
+	//Distance around them they can perceive
+	int perception = 0;
+	//Knowledge
 
 	std::array<int, 2> position;
 	ServerUpdate pendingServerUpdate;
