@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 Cell::Cell(){
+	resources["Food"] = rand() % 100;
 }
 
 
@@ -37,6 +38,11 @@ std::string Cell::printInfoGrid(){
 //Indicates whether org is present in cell
 bool Cell::containsOrg(int id){
 	return (find(orgsPresent.begin(), orgsPresent.end(), id) != orgsPresent.end());
+}
+
+//Returns list of orgs present in cell
+std::vector<int> Cell::getOrgs() {
+	return orgsPresent;
 }
 
 //If org is not already present, add it.

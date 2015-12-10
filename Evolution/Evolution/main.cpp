@@ -31,16 +31,17 @@ int main(){
 	int HEIGHT = 5;
 	int INIT_SIZE = 2;
 
-	Server* server = new Server(WIDTH, HEIGHT);
+	Server* server = new Server(WIDTH, HEIGHT, &ORG_LIST);
 
 	for (int i = 0; i < INIT_SIZE; i++){
 		spawnNewOrg(server, WIDTH, HEIGHT);
 	}
 
-	std::string input;
 
+
+	std::string input;
 	while (input != "end"){
-		//TO DO: CHANGE TO MULTITHREADED "SIMULTANEOUS" BEHAVIOR
+		//TO DO: CHANGE TO "SIMULTANEOUS" BEHAVIOR
 		for (int i = 0; i < ORG_LIST.size(); i++){
 			ORG_LIST[i]->updateSelf();
 			ORG_LIST[i]->sendUpdate(SERVER_INBOX);

@@ -3,6 +3,25 @@
 
 #include <vector>
 
+struct EatRequest {
+	bool request_made = false;
+	int amount;
+};
+struct AttackRequest {
+	bool request_made = false;
+	int victimID;
+	int strength;
+};
+struct MateRequest {
+	bool request_made = false;
+	int mateID;
+};
+struct HealRequest {
+	bool request_made = false;
+	int friendID;
+	int strength;
+};
+
 //Request server for knowledge of surroundings
 struct SensoryRequest{
 	int perception; //how many cells to give info about
@@ -15,6 +34,10 @@ struct OrgUpdate{
 	int oldX, oldY; //Previous position (for finding purposes)
 	int newX, newY; //Desired new position
 	SensoryRequest sensoryrequest;
+	EatRequest eatrequest;
+	AttackRequest attackrequest;
+	MateRequest materequest;
+	HealRequest healrequest;
 };
 
 
@@ -27,6 +50,7 @@ struct OrgSense{
 
 //Organism knowledge about surrounding environment cells
 struct CellSense{
+	int deltaX, deltaY; //difference in coords from org position
 	int food;
 	std::vector<OrgSense> orgs;
 };
@@ -34,7 +58,7 @@ struct CellSense{
 
 //Type sent from server to organisms to update them.
 struct ServerUpdate{
-	bool checked = false;
+	bool checked;
 	int newX, newY;
 	std::vector<CellSense> surroundings;
 };

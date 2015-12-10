@@ -104,6 +104,11 @@ void Environment::moveOrg(int id, int oldX, int oldY, int newX, int newY){
 }
 
 
+//Gets list of IDs of orgs on current space
+std::vector<int> Environment::getOrgs(int x, int y) {
+	return matrix[y*width + x]->getOrgs();
+}
+
 
 //Gets complete resource info for a cell
 std::map<std::string, int> Environment::getResources(int x, int y){

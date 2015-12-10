@@ -14,6 +14,7 @@ public:
 	std::string printInfoGrid();
 
 	bool containsOrg(int id);
+	std::vector<int> getOrgs();
 	void insertOrg(int id);
 	void removeOrg(int id);
 

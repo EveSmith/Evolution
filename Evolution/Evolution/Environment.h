@@ -21,6 +21,7 @@ public:
 	void remOrg(int id);
 	void remOrg(int id, int x, int y);
 	void moveOrg(int id, int oldX, int oldY, int newX, int newY);
+	std::vector<int> getOrgs(int x, int y);
 
 	std::map<std::string, int> getResources(int x, int y);
 	int getResources(int x, int y, std::string resource);

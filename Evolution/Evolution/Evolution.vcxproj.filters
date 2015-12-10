@@ -15,30 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Environment.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnviroCell.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Organism.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Messages.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="EnviroCell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnviroCell.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Organism.cpp">
@@ -47,5 +30,22 @@
     <ClCompile Include="Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EnviroCell.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Messages.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Organism.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
