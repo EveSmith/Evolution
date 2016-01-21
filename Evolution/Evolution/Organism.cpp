@@ -1,5 +1,6 @@
 #include "Organism.h"
 #include <iostream>
+#include <map>
 
 static int UNIVERSAL_ID = 0;
 
@@ -27,9 +28,7 @@ Organism::Organism(){
 	pendingServerUpdate = { true, 0, 0 };
 	newborn = true;
 
-	std::vector<OrgSense> dummyVector;
-	CellSense dummyCellSense = { 0,0,0, dummyVector };
-	surroundings.push_back(dummyCellSense);
+	//establish default surroundings?
 }
 
 Organism::Organism(int initX, int initY){
@@ -52,9 +51,7 @@ Organism::Organism(int initX, int initY){
 	pendingServerUpdate = { true, 0, 0 };
 	newborn = true;
 
-	std::vector<OrgSense> dummyVector;
-	CellSense dummyCellSense = { 0,0,0, dummyVector };
-	surroundings.push_back(dummyCellSense);
+	//establish default surroundings?
 }
 
 Organism::Organism(std::string str){
@@ -72,17 +69,15 @@ Organism::Organism(std::string str){
 	pendingServerUpdate = { true, 0, 0 };
 	newborn = true;
 
-	std::vector<OrgSense> dummyVector;
-	CellSense dummyCellSense = { 0,0,0, dummyVector };
-	surroundings.push_back(dummyCellSense);
+	//establish default surroundings?
 }
 
 std::string Organism::print(){
 	std::string info = "Organism: " + std::to_string(ID) + "\n\tPosition: " +
 		std::to_string(position[0]) + "," + std::to_string(position[1]) + "\n" +
 		"\tHealth: " + std::to_string(health) + "\n" +
-		"\tDNA: " + DNA + "\n" +
-		"\tResources on position: " + std::to_string(surroundings[0].food) + "\n";
+		"\tDNA: " + DNA + "\n";
+		//"\tResources on position: " + std::to_string(surroundings[0].food) + "\n";
 	return info;
 }
 
@@ -164,61 +159,82 @@ void Organism::updateSelf(){
 }
 
 
-//TO DO: MAKE BEHAVIOR RELY ON SURROUNDINGS
-void Organism::reason(){
-	bool mated = false;
-	for (int i = 0; i < forethought; i++) {
-		//If there's more orgs on current space...
-		//(NOT 100% FUNCTIONAL IF MORE THAN 2 ORGS ON SAME SPACE!! FIX!!)
-		if (surroundings[0].orgs.size()>0 && rand()%101<25) {
-			if(!mated){
-				std::function<void()> mate_lambda = [=]() {mate(surroundings[0].orgs[0].ID); };
-				actionPlan.push(mate_lambda);
-				mated = true;
-				std::cout << "Organism " + std::to_string(ID) + " tried to mate with Organism " + std::to_string(surroundings[0].orgs[0].ID) + "." << std::endl;
-			}
-			else if (rand()%2 == 0) {
-				std::function<void()> attack_lambda = [=]() {attack(surroundings[0].orgs[0].ID); };
-				actionPlan.push(attack_lambda);
-				std::cout << "Organism " + std::to_string(ID) + " attacked Organism " + std::to_string(surroundings[0].orgs[0].ID) + "." << std::endl;
-			}
-			else {
-				std::function<void()> heal_lambda = [=]() {heal(surroundings[0].orgs[0].ID); };
-				actionPlan.push(heal_lambda);
-				std::cout << "Organism " + std::to_string(ID) + " transferred some health to Organism "+ std::to_string(surroundings[0].orgs[0].ID) + "."<< std::endl;
-			}
-		}
-		else {
-			if (rand()%101<health) {
-				int maxfoodIndex = 0;
-				for (int j = 0; j < surroundings.size(); j++) {
-					if (surroundings[j].food > surroundings[maxfoodIndex].food || rand()%101<25) {
-						maxfoodIndex = j;
-					}
-					else if (surroundings[j].food == surroundings[maxfoodIndex].food) {
-						if (rand() % 2 == 0) {
-							maxfoodIndex = j;
-						}
-					}
-				}
-				std::function<void()> move_lambda = [=]() { move(surroundings[maxfoodIndex].deltaX, surroundings[maxfoodIndex].deltaY); };
-				actionPlan.push(move_lambda);
-				if (maxfoodIndex == 0) {
-					std::cout << "Organism " + std::to_string(ID) + " stayed still." << std::endl;
-				}
-				else {
-					std::cout << "Organism " + std::to_string(ID) + " moved." << std::endl;
-				}
-			}
-			else {
-				std::function<void()> eat_lambda = [=]() {eat(); };
-				actionPlan.push(eat_lambda);
-				std::cout << "Organism " + std::to_string(ID) + " ate." << std::endl;
-			}
-			
-		}
-		
+float Organism::compare_surroundings(Observation obs) {
+	float comparison_rating = 0;
+	if (obs.ObsType == "Org" && !surroundings.orgsNearby.empty()) {
+		comparison_rating++;
 	}
+	else if (obs.ObsType == "Food") {
+
+	}
+	return comparison_rating;
+}
+
+
+void Organism::reason(){
+	std::map<std::string, float> action_ratings;
+	for (int i = 0; i < knowledge.size(); i++) {
+		if (action_ratings.find(knowledge[i].action) == action_ratings.end()) {
+			action_ratings[knowledge[i].action] = 0;
+		}
+		float current_action_weight = compare_surroundings(knowledge[i].observation) * knowledge[i].goodness;
+		action_ratings[knowledge[i].action] += current_action_weight;
+	}
+
+	
+	//bool mated = false;
+	//for (int i = 0; i < forethought; i++) {
+	//	//If there's more orgs on current space...
+	//	//(NOT 100% FUNCTIONAL IF MORE THAN 2 ORGS ON SAME SPACE!! FIX!!)
+	//	if (surroundings[0].orgs.size()>0 && rand()%101<25) {
+	//		if(!mated){
+	//			std::function<void()> mate_lambda = [=]() {mate(surroundings[0].orgs[0].ID); };
+	//			actionPlan.push(mate_lambda);
+	//			mated = true;
+	//			std::cout << "Organism " + std::to_string(ID) + " tried to mate with Organism " + std::to_string(surroundings[0].orgs[0].ID) + "." << std::endl;
+	//		}
+	//		else if (rand()%2 == 0) {
+	//			std::function<void()> attack_lambda = [=]() {attack(surroundings[0].orgs[0].ID); };
+	//			actionPlan.push(attack_lambda);
+	//			std::cout << "Organism " + std::to_string(ID) + " attacked Organism " + std::to_string(surroundings[0].orgs[0].ID) + "." << std::endl;
+	//		}
+	//		else {
+	//			std::function<void()> heal_lambda = [=]() {heal(surroundings[0].orgs[0].ID); };
+	//			actionPlan.push(heal_lambda);
+	//			std::cout << "Organism " + std::to_string(ID) + " transferred some health to Organism "+ std::to_string(surroundings[0].orgs[0].ID) + "."<< std::endl;
+	//		}
+	//	}
+	//	else {
+	//		if (rand()%101<health) {
+	//			int maxfoodIndex = 0;
+	//			for (int j = 0; j < surroundings.size(); j++) {
+	//				if (surroundings[j].food > surroundings[maxfoodIndex].food || rand()%101<25) {
+	//					maxfoodIndex = j;
+	//				}
+	//				else if (surroundings[j].food == surroundings[maxfoodIndex].food) {
+	//					if (rand() % 2 == 0) {
+	//						maxfoodIndex = j;
+	//					}
+	//				}
+	//			}
+	//			std::function<void()> move_lambda = [=]() { move(surroundings[maxfoodIndex].deltaX, surroundings[maxfoodIndex].deltaY); };
+	//			actionPlan.push(move_lambda);
+	//			if (maxfoodIndex == 0) {
+	//				std::cout << "Organism " + std::to_string(ID) + " stayed still." << std::endl;
+	//			}
+	//			else {
+	//				std::cout << "Organism " + std::to_string(ID) + " moved." << std::endl;
+	//			}
+	//		}
+	//		else {
+	//			std::function<void()> eat_lambda = [=]() {eat(); };
+	//			actionPlan.push(eat_lambda);
+	//			std::cout << "Organism " + std::to_string(ID) + " ate." << std::endl;
+	//		}
+	//		
+	//	}
+	//	
+	//}
 }
 
 void Organism::move(int deltaX, int deltaY){

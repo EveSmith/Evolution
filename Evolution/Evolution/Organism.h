@@ -36,12 +36,13 @@ private:
 	std::string DNA;
 	bool newborn;
 
-	//Number of actions organism can plan at once
-	int forethought = 1;
 	//Distance around them they can perceive
 	int perception = 1;
 	//Knowledge of surroundings
-	std::vector<CellSense> surroundings;
+	Surroundings surroundings;
+
+	//Compares input observation to current surroundings, decides if situation is similar
+	float compare_surroundings(Observation obs);
 
 	std::array<int, 2> position;
 	ServerUpdate pendingServerUpdate;
@@ -55,10 +56,15 @@ private:
 	void reason();
 
 	void move(int deltaX, int deltaY);
+
+	//Don't worry about these for now
 	void eat();
 	void mate(int mateID);
 	void attack(int victimID);
 	void heal(int friendID);
+
+	//Sum of organism's knowledge
+	std::vector<Intel> knowledge;
 };
 
 

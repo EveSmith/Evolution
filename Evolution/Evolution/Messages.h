@@ -2,6 +2,7 @@
 #define MESSAGES_H
 
 #include <vector>
+#include <map>
 
 struct EatRequest {
 	bool request_made = false;
@@ -48,11 +49,32 @@ struct OrgSense{
 	int ID;
 };
 
-//Organism knowledge about surrounding environment cells
-struct CellSense{
-	int deltaX, deltaY; //difference in coords from org position
-	int food;
-	std::vector<OrgSense> orgs;
+
+////DELETE LATER
+//struct CellSense{
+//	int deltaX, deltaY; //difference in coords from org position
+//	int food;
+//	std::vector<OrgSense> orgs;
+//};
+
+struct Surroundings {
+	std::vector<std::pair<std::pair<int, int>, OrgSense>> orgsNearby;
+	std::vector <std::pair<std::pair<int, int>, int>> foodNearby;
+};
+
+
+//Observations
+struct Observation {
+	std::string ObsType;
+	std::string TraitCategory;
+	std::string trait;
+};
+
+//Individual units of knowledge: associations between observations and actions
+struct Intel {
+	Observation observation;
+	std::string action;
+	float goodness;
 };
 
 
@@ -60,7 +82,7 @@ struct CellSense{
 struct ServerUpdate{
 	bool checked;
 	int newX, newY;
-	std::vector<CellSense> surroundings;
+	Surroundings surroundings;
 };
 
 #endif //MESSAGES_H

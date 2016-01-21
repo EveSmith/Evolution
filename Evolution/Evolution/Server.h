@@ -22,7 +22,7 @@ public:
 
 	void update(std::queue<OrgUpdate> &inbox);
 	void confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate);
-	std::vector<CellSense> compileSurroundings(int ID, int x, int y, SensoryRequest senseRequest);
+	Surroundings compileSurroundings(int ID, int x, int y);
 
 	void addOrg(Organism* org);
 	void killOrg(int id);

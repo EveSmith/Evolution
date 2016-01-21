@@ -65,7 +65,7 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 		servUpdate.newX = currUpdate.newX;
 		servUpdate.newY = currUpdate.newY;
 		servUpdate.checked = false;
-		servUpdate.surroundings = compileSurroundings(currUpdate.senderID, currUpdate.newX, currUpdate.newY, currUpdate.sensoryrequest);
+		servUpdate.surroundings = compileSurroundings(currUpdate.senderID, currUpdate.newX, currUpdate.newY);
 		//Org list is a map, with IDs as keys
 		orgList[currUpdate.senderID]->receiveUpdate(servUpdate);
 	}
@@ -85,117 +85,164 @@ void Server::confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate){
 //CURRENTLY ONLY ALLOWS SENSING IN STRAIGHT LINE FROM CURRENT LOCATION
 //DOES NOT INCLUDE ANY CORNERS
 //IS ALSO EXTREMELY MESSY!! FIX LATER!!
-std::vector<CellSense> Server::compileSurroundings(int ID, int x, int y, SensoryRequest senseRequest) {
-	std::vector<CellSense> toReturn;
-	CellSense currentCell;
+Surroundings Server::compileSurroundings(int ID, int x, int y) {
+	Surroundings toReturn;
 
-	for (int i = 0; i <= senseRequest.perception; i++) {
-		if (i == 0) {
-			//MIDDLE (CURRENT SPACE ORG IS ON)
+	//Compile surrounding food amounts
+	toReturn.foodNearby.push_back(std::make_pair(std::make_pair(0, 0), E->getResources(x, y, "Food")));
+	//Try-excepts to catch out of bounds errors if org is on edge of map, probably not great form...
+	if(x!=width-1) { toReturn.foodNearby.push_back(std::make_pair(std::make_pair(1, 0), E->getResources(x + 1, y, "Food"))); }
+	if(y!=height-1){ toReturn.foodNearby.push_back(std::make_pair(std::make_pair(0, 1), E->getResources(x, y+1, "Food"))); }
+	if(x!=0) { toReturn.foodNearby.push_back(std::make_pair(std::make_pair(-1, 0), E->getResources(x-1, y, "Food"))); }
+	if(y!=0) { toReturn.foodNearby.push_back(std::make_pair(std::make_pair(0, -1), E->getResources(x, y-1, "Food"))); }
 
-			currentCell.deltaX = 0;
-			currentCell.deltaY = 0;
-			//Get resource info
-			currentCell.food = E->getResources(x, y, "Food");
-			//Get org info
-			std::vector<int> tempOrgList = E->getOrgs(x, y);
-			std::vector<OrgSense> orgs;
-
-			//Put org IDs (except own ID) into OrgSense objects
-			for (int j = 0; j < tempOrgList.size(); j++) {
-				if (tempOrgList[j] != ID) {
-					OrgSense tempOrgSense = { tempOrgList[j] };
-					orgs.push_back(tempOrgSense);
-				}
-			}
-			currentCell.orgs = orgs;
-			toReturn.push_back(currentCell);
-		}
-
-		else {
-			//UP
-
-			if(y!=0) {
-				currentCell.deltaX = 0;
-				currentCell.deltaY = -i;
-				//Get resource info
-				currentCell.food = E->getResources(x, y - i, "Food");
-				//Get org info
-				std::vector<int> tempOrgList = E->getOrgs(x, y - 1);
-				std::vector<OrgSense> orgs;
-
-				//Put org IDs (except own ID) into OrgSense objects
-				for (int j = 0; j < tempOrgList.size(); j++) {
-					OrgSense tempOrgSense = { tempOrgList[j] };
-					orgs.push_back(tempOrgSense);
-				}
-				currentCell.orgs = orgs;
-				toReturn.push_back(currentCell);
-			}
-
-
-			//RIGHT
-			if(x!=width-1) {
-				currentCell.deltaX = i;
-				currentCell.deltaY = 0;
-				//Get resource info
-				currentCell.food = E->getResources(x + i, y, "Food");
-				//Get org info
-				std::vector<int> tempOrgList = E->getOrgs(x + 1, y);
-				std::vector<OrgSense> orgs;
-
-				//Put org IDs (except own ID) into OrgSense objects
-				for (int j = 0; j < tempOrgList.size(); j++) {
-					OrgSense tempOrgSense = { tempOrgList[j] };
-					orgs.push_back(tempOrgSense);
-				}
-				currentCell.orgs = orgs;
-				toReturn.push_back(currentCell);
-			}
-
-
-			//DOWN
-
-			if(y!=height-1) {
-				currentCell.deltaX = 0;
-				currentCell.deltaY = i;
-				//Get resource info
-				currentCell.food = E->getResources(x, y + i, "Food");
-				//Get org info
-				std::vector<int> tempOrgList = E->getOrgs(x, y + 1);
-				std::vector<OrgSense> orgs;
-
-				//Put org IDs (except own ID) into OrgSense objects
-				for (int j = 0; j < tempOrgList.size(); j++) {
-					OrgSense tempOrgSense = { tempOrgList[j] };
-					orgs.push_back(tempOrgSense);
-				}
-				currentCell.orgs = orgs;
-				toReturn.push_back(currentCell);
-			}
-
-
-			//LEFT
-
-			if(x!=0) {
-				currentCell.deltaX = -i;
-				currentCell.deltaY = 0;
-				//Get resource info
-				currentCell.food = E->getResources(x - i, y, "Food");
-				//Get org info
-				std::vector<int> tempOrgList = E->getOrgs(x - i, y);
-				std::vector<OrgSense> orgs;
-
-				//Put org IDs (except own ID) into OrgSense objects
-				for (int j = 0; j < tempOrgList.size(); j++) {
-					OrgSense tempOrgSense = { tempOrgList[j] };
-					orgs.push_back(tempOrgSense);
-				}
-				currentCell.orgs = orgs;
-				toReturn.push_back(currentCell);
-			}
+	//Compile surrounding organisms
+	std::vector<int> currentOrgList = E->getOrgs(x, y);
+	OrgSense currentOrgSense;
+	for (int i = 0; i < currentOrgList.size(); i++) {
+		currentOrgSense.ID = currentOrgList[i];
+		toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(0, 0), currentOrgSense));
+	}
+	if (x != width - 1) {
+		std::vector<int> currentOrgList = E->getOrgs(x + 1, y);
+		OrgSense currentOrgSense;
+		for (int i = 0; i < currentOrgList.size(); i++) {
+			currentOrgSense.ID = currentOrgList[i];
+			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(1, 0), currentOrgSense));
 		}
 	}
+	if (y != height - 1) {
+		std::vector<int> currentOrgList = E->getOrgs(x, y+1);
+		OrgSense currentOrgSense;
+		for (int i = 0; i < currentOrgList.size(); i++) {
+			currentOrgSense.ID = currentOrgList[i];
+			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(0, 1), currentOrgSense));
+		}
+	}
+	if (x != 0) {
+		std::vector<int> currentOrgList = E->getOrgs(x-1, y);
+		OrgSense currentOrgSense;
+		for (int i = 0; i < currentOrgList.size(); i++) {
+			currentOrgSense.ID = currentOrgList[i];
+			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(-1, 0), currentOrgSense));
+		}
+	}
+	if (y != 0) {
+		std::vector<int> currentOrgList = E->getOrgs(x, y-1);
+		OrgSense currentOrgSense;
+		for (int i = 0; i < currentOrgList.size(); i++) {
+			currentOrgSense.ID = currentOrgList[i];
+			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(0, -1), currentOrgSense));
+		}
+	}
+
+	//for (int i = 0; i <= 4; i++) {
+	//	if (i == 0) {
+	//		//MIDDLE (CURRENT SPACE ORG IS ON)
+
+	//		currentCell.deltaX = 0;
+	//		currentCell.deltaY = 0;
+	//		//Get resource info
+	//		currentCell.food = E->getResources(x, y, "Food");
+	//		//Get org info
+	//		std::vector<int> tempOrgList = E->getOrgs(x, y);
+	//		std::vector<OrgSense> orgs;
+
+	//		//Put org IDs (except own ID) into OrgSense objects
+	//		for (int j = 0; j < tempOrgList.size(); j++) {
+	//			if (tempOrgList[j] != ID) {
+	//				OrgSense tempOrgSense = { tempOrgList[j] };
+	//				orgs.push_back(tempOrgSense);
+	//			}
+	//		}
+	//		currentCell.orgs = orgs;
+	//		toReturn.push_back(currentCell);
+	//	}
+
+	//	else {
+	//		//UP
+
+	//		if(y!=0) {
+	//			currentCell.deltaX = 0;
+	//			currentCell.deltaY = -i;
+	//			//Get resource info
+	//			currentCell.food = E->getResources(x, y - i, "Food");
+	//			//Get org info
+	//			std::vector<int> tempOrgList = E->getOrgs(x, y - 1);
+	//			std::vector<OrgSense> orgs;
+
+	//			//Put org IDs (except own ID) into OrgSense objects
+	//			for (int j = 0; j < tempOrgList.size(); j++) {
+	//				OrgSense tempOrgSense = { tempOrgList[j] };
+	//				orgs.push_back(tempOrgSense);
+	//			}
+	//			currentCell.orgs = orgs;
+	//			toReturn.push_back(currentCell);
+	//		}
+
+
+	//		//RIGHT
+	//		if(x!=width-1) {
+	//			currentCell.deltaX = i;
+	//			currentCell.deltaY = 0;
+	//			//Get resource info
+	//			currentCell.food = E->getResources(x + i, y, "Food");
+	//			//Get org info
+	//			std::vector<int> tempOrgList = E->getOrgs(x + 1, y);
+	//			std::vector<OrgSense> orgs;
+
+	//			//Put org IDs (except own ID) into OrgSense objects
+	//			for (int j = 0; j < tempOrgList.size(); j++) {
+	//				OrgSense tempOrgSense = { tempOrgList[j] };
+	//				orgs.push_back(tempOrgSense);
+	//			}
+	//			currentCell.orgs = orgs;
+	//			toReturn.push_back(currentCell);
+	//		}
+
+
+	//		//DOWN
+
+	//		if(y!=height-1) {
+	//			currentCell.deltaX = 0;
+	//			currentCell.deltaY = i;
+	//			//Get resource info
+	//			currentCell.food = E->getResources(x, y + i, "Food");
+	//			//Get org info
+	//			std::vector<int> tempOrgList = E->getOrgs(x, y + 1);
+	//			std::vector<OrgSense> orgs;
+
+	//			//Put org IDs (except own ID) into OrgSense objects
+	//			for (int j = 0; j < tempOrgList.size(); j++) {
+	//				OrgSense tempOrgSense = { tempOrgList[j] };
+	//				orgs.push_back(tempOrgSense);
+	//			}
+	//			currentCell.orgs = orgs;
+	//			toReturn.push_back(currentCell);
+	//		}
+
+
+	//		//LEFT
+
+	//		if(x!=0) {
+	//			currentCell.deltaX = -i;
+	//			currentCell.deltaY = 0;
+	//			//Get resource info
+	//			currentCell.food = E->getResources(x - i, y, "Food");
+	//			//Get org info
+	//			std::vector<int> tempOrgList = E->getOrgs(x - i, y);
+	//			std::vector<OrgSense> orgs;
+
+	//			//Put org IDs (except own ID) into OrgSense objects
+	//			for (int j = 0; j < tempOrgList.size(); j++) {
+	//				OrgSense tempOrgSense = { tempOrgList[j] };
+	//				orgs.push_back(tempOrgSense);
+	//			}
+	//			currentCell.orgs = orgs;
+	//			toReturn.push_back(currentCell);
+	//		}
+	//	}
+	//}
 
 	return toReturn;
 }
