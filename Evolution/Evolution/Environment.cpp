@@ -85,10 +85,9 @@ void Environment::addOrg(int id, int x, int y){
 
 //Find and remove organism
 void Environment::remOrg(int id){
-	for (int i = 0; i < matrix.size(); i++){
-		if (matrix[i]->containsOrg(id)){
-			matrix[i]->removeOrg(id);
-		}
+	int orgIndex = findOrg(id);
+	if (orgIndex != -1){
+		matrix[orgIndex]->removeOrg(id);
 	}
 }
 
@@ -97,8 +96,40 @@ void Environment::remOrg(int id, int x, int y){
 	matrix[y*width + x]->removeOrg(id);
 }
 
+
 //Relocates organism
 void Environment::moveOrg(int id, int oldX, int oldY, int newX, int newY){
+	this->remOrg(id);
 	this->addOrg(id, newX, newY);
-	this->remOrg(id, oldX, oldY);
+}
+
+
+//Gets list of IDs of orgs on current space
+std::vector<int> Environment::getOrgs(int x, int y) {
+	return matrix[y*width + x]->getOrgs();
+}
+
+
+//Gets complete resource info for a cell
+std::map<std::string, int> Environment::getResources(int x, int y){
+	return matrix[y*width + x]->getResources();
+}
+
+//Gets specific resource amount for a cell
+int Environment::getResources(int x, int y, std::string resource){
+	return matrix[y*width + x]->getResource(resource);
+}
+
+//Changes all of the resources in a cell by the amounts specified in deltaMap
+void Environment::changeResources(int x, int y, std::map<std::string, int> deltaMap){
+	typedef std::map<std::string, int>::iterator iter_map;
+	for (iter_map iterator = deltaMap.begin(); iterator != deltaMap.end(); ++iterator){
+		matrix[y*width + x]->modifyResources(iterator->first, iterator->second);
+	}
+		
+}
+
+//Changes specific resource in a cell by the amount specified in delta
+void Environment::changeResources(int x, int y, std::string resource, int delta){
+	matrix[y*width + x]->modifyResources(resource, delta);
 }

@@ -1,14 +1,21 @@
-﻿Build started 11/30/2015 2:48:26 PM.
-     1>Project "C:\Users\Eve\Desktop\Evolution\Evolution\Evolution\Evolution.vcxproj" on node 2 (Build target(s)).
-     1>Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 13.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.lib" /MACHINE:X86 Debug\EnviroCell.obj
-         Debug\Environment.obj
-         Debug\main.obj
-         Debug\Organism.obj
-         Debug\Server.obj
-         Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.exe
-     1>Done Building Project "C:\Users\Eve\Desktop\Evolution\Evolution\Evolution\Evolution.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:01.62
+﻿  Server.cpp
+c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(105): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(128): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(148): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(169): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(190): warning C4018: '<': signed/unsigned mismatch
+  Organism.cpp
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(194): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
+c:\users\evie\desktop\evolution\evolution\evolution\main.cpp(19): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\main.cpp(27): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+c:\users\evie\desktop\evolution\evolution\evolution\main.cpp(45): warning C4018: '<': signed/unsigned mismatch
+  Environment.cpp
+c:\users\evie\desktop\evolution\evolution\evolution\environment.cpp(16): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\evie\desktop\evolution\evolution\evolution\environment.cpp(32): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\environment.cpp(71): warning C4018: '<': signed/unsigned mismatch
+  EnviroCell.cpp
+c:\users\evie\desktop\evolution\evolution\evolution\envirocell.cpp(19): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  Evolution.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution\Debug\Evolution.exe
+  Evolution.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution\Debug\Evolution.pdb (Partial PDB)

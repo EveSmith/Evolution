@@ -1,8 +1,10 @@
 #include "EnviroCell.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 Cell::Cell(){
+	resources["Food"] = rand() % 100;
 }
 
 
@@ -26,7 +28,7 @@ std::string Cell::printInfoGrid(){
 		info = " " + std::to_string(orgsPresent.size()) + " ";
 	}
 	else{
-		info.append(" ");
+		info.append("   ");
 	}
 	
 	return info;
@@ -36,6 +38,11 @@ std::string Cell::printInfoGrid(){
 //Indicates whether org is present in cell
 bool Cell::containsOrg(int id){
 	return (find(orgsPresent.begin(), orgsPresent.end(), id) != orgsPresent.end());
+}
+
+//Returns list of orgs present in cell
+std::vector<int> Cell::getOrgs() {
+	return orgsPresent;
 }
 
 //If org is not already present, add it.
@@ -51,5 +58,31 @@ void Cell::removeOrg(int id){
 	std::vector<int>::iterator position = find(orgsPresent.begin(), orgsPresent.end(), id);
 	if (position != orgsPresent.end()){
 		orgsPresent.erase(position);
+	}
+}
+
+
+//Returns this cell's resource map
+std::map<std::string,int> Cell::getResources(){
+	return resources;
+}
+
+//Returns the value of the specified resource
+int Cell::getResource(std::string resource){
+	if (resources.count(resource) > 0){
+		return resources[resource];
+	}
+	else{
+		throw std::invalid_argument("Resource " + resource + " does not exist");
+	}
+}
+
+//Changes amount of resource by the specified delta
+void Cell::modifyResources(std::string resource, int delta){
+	if (resources.count(resource) > 0){
+		resources[resource] += delta;
+	}
+	else{
+		throw std::invalid_argument("Resource " + resource + " does not exist");
 	}
 }
