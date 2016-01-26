@@ -1,8 +1,74 @@
 #include "Organism.h"
 #include <iostream>
 #include <map>
+#include <stdlib.h>
 
 static int UNIVERSAL_ID = 0;
+static int GENE_LENGTH = 3;
+static int INTEL_LENGTH = 5;
+
+int bin_to_int(std::string binary) {
+	int answer = 0;
+	if (binary[0] == '1') {
+		answer += 4;
+	}
+	if (binary[1] == '1') {
+		answer += 2;
+	}
+	if (binary[0] == '1') {
+		answer += 1;
+	}
+	return answer;
+}
+
+std::vector<Intel> parse_dna(std::string dna) {
+	std::vector<Intel> knowledge;
+	for (int i = 0; i < dna.size() / INTEL_LENGTH; i++) {
+		Observation currentObs;
+		Intel currentIntel;
+		std::string intel_slice = dna.substr(i*INTEL_LENGTH, INTEL_LENGTH*GENE_LENGTH);
+		std::cout << intel_slice;
+		//Subject
+		std::string subjects[] = {"Org", "Org", "Org", "Org", "Org", "Food", "Food", "Food", "Food", "Food"};
+		int subjectVal = bin_to_int(intel_slice.substr(0, GENE_LENGTH));
+		currentObs.subject = subjects[subjectVal];
+		//Trait
+		int traitVal = bin_to_int(intel_slice.substr(GENE_LENGTH, GENE_LENGTH));
+		std::string traits[] = { "Mateable", "Proximity", "Proximity", "Color", "Color", "Size", "Size", "Newborn" };
+		currentObs.trait = traits[traitVal];
+		//Value
+		int valueVal = bin_to_int(intel_slice.substr(2 * GENE_LENGTH, GENE_LENGTH));
+		if (currentObs.trait == "Mateable") {
+			std::string values[] = { "yes", "yes", "yes", "yes", "no", "no", "no", "no" };
+			currentObs.value = values[valueVal];
+		}
+		else if (currentObs.trait == "Proximity") {
+			std::string values[] = { "near", "near", "near", "mid", "mid", "far", "far", "far" };
+			currentObs.value = values[valueVal];
+		}
+		else if (currentObs.trait == "Color") {
+			currentObs.value = valueVal;
+		}
+		else if (currentObs.trait == "Size") {
+			std::string values[] = { "smaller", "smaller", "smaller", "similar", "similar", "larger", "larger", "larger" };
+			currentObs.value = values[valueVal];
+		}
+		else {
+			std::string values[] = { "yes", "yes", "yes", "yes", "no", "no", "no", "no" };
+			currentObs.value = values[valueVal];
+		}
+		//Action
+		currentIntel.observation = currentObs;
+		int actionVal = bin_to_int(intel_slice.substr(3 * GENE_LENGTH, GENE_LENGTH));
+		std::string actions[] = { "Ignore", "Eat", "Eat", "Attack", "Move Away", "Move Toward", "Mating On", "Mating Off" };
+		currentIntel.action = actions[actionVal];
+		//Rating
+		currentIntel.rating = bin_to_int(intel_slice.substr(4 * GENE_LENGTH, GENE_LENGTH));
+
+		knowledge.push_back(currentIntel);
+	}
+	return knowledge;
+}
 
 /*
 Organism handles:
@@ -16,11 +82,12 @@ Organism::Organism(){
 
 	this->health = 100;
 
-	//Generate some length of DNA (currently length 1)
+	//Generate some binary DNA
 	DNA = "";
-	for (int i = 0; i < 1; i++){
-		DNA.append(std::to_string(rand() % 10));
+	for (int i = 0; i < GENE_LENGTH*INTEL_LENGTH*1; i++){
+		DNA.append(std::to_string(rand() % 2));
 	}
+	std::cout << DNA;
 
 	//set org position to 0,0
 	position.fill(0);
@@ -31,7 +98,7 @@ Organism::Organism(){
 	//establish default surroundings?
 }
 
-Organism::Organism(int initX, int initY){
+Organism::Organism(int initX, int initY, std::string initDNA){
 	//Unique ID for each organism, hopefully.
 	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
@@ -39,32 +106,11 @@ Organism::Organism(int initX, int initY){
 	this->health = 100;
 
 	//Generate some length of DNA (currently length 1)
-	DNA = "";
-	for (int i = 0; i < 1; i++){
-		DNA.append(std::to_string(rand() % 10));
-	}
+	DNA = initDNA;
 
 	//set org position to 0,0
 	position[0] = initX;
 	position[1] = initY;
-
-	pendingServerUpdate = { true, 0, 0 };
-	newborn = true;
-
-	//establish default surroundings?
-}
-
-Organism::Organism(std::string str){
-	this->ID = UNIVERSAL_ID;
-	UNIVERSAL_ID++;
-
-	this->health = 100;
-
-	//set DNA
-	DNA = str;
-
-	//set org position to 0,0
-	position.fill(0);
 
 	pendingServerUpdate = { true, 0, 0 };
 	newborn = true;
@@ -94,6 +140,9 @@ int Organism::getY(){
 	return position[1];
 }
 
+std::string Organism::getDNA() {
+	return DNA;
+}
 
 void Organism::receiveUpdate(ServerUpdate update){
 	this->pendingServerUpdate = update;
@@ -161,10 +210,10 @@ void Organism::updateSelf(){
 
 float Organism::compare_surroundings(Observation obs) {
 	float comparison_rating = 0;
-	if (obs.ObsType == "Org" && !surroundings.orgsNearby.empty()) {
+	if (obs.subject == "Org" && !surroundings.orgsNearby.empty()) {
 		comparison_rating++;
 	}
-	else if (obs.ObsType == "Food") {
+	else if (obs.subject == "Food") {
 
 	}
 	return comparison_rating;
@@ -174,67 +223,13 @@ float Organism::compare_surroundings(Observation obs) {
 void Organism::reason(){
 	std::map<std::string, float> action_ratings;
 	for (int i = 0; i < knowledge.size(); i++) {
+		//Add new action if not seen before
 		if (action_ratings.find(knowledge[i].action) == action_ratings.end()) {
 			action_ratings[knowledge[i].action] = 0;
 		}
-		float current_action_weight = compare_surroundings(knowledge[i].observation) * knowledge[i].goodness;
+		float current_action_weight = compare_surroundings(knowledge[i].observation) * knowledge[i].rating;
 		action_ratings[knowledge[i].action] += current_action_weight;
 	}
-
-	
-	//bool mated = false;
-	//for (int i = 0; i < forethought; i++) {
-	//	//If there's more orgs on current space...
-	//	//(NOT 100% FUNCTIONAL IF MORE THAN 2 ORGS ON SAME SPACE!! FIX!!)
-	//	if (surroundings[0].orgs.size()>0 && rand()%101<25) {
-	//		if(!mated){
-	//			std::function<void()> mate_lambda = [=]() {mate(surroundings[0].orgs[0].ID); };
-	//			actionPlan.push(mate_lambda);
-	//			mated = true;
-	//			std::cout << "Organism " + std::to_string(ID) + " tried to mate with Organism " + std::to_string(surroundings[0].orgs[0].ID) + "." << std::endl;
-	//		}
-	//		else if (rand()%2 == 0) {
-	//			std::function<void()> attack_lambda = [=]() {attack(surroundings[0].orgs[0].ID); };
-	//			actionPlan.push(attack_lambda);
-	//			std::cout << "Organism " + std::to_string(ID) + " attacked Organism " + std::to_string(surroundings[0].orgs[0].ID) + "." << std::endl;
-	//		}
-	//		else {
-	//			std::function<void()> heal_lambda = [=]() {heal(surroundings[0].orgs[0].ID); };
-	//			actionPlan.push(heal_lambda);
-	//			std::cout << "Organism " + std::to_string(ID) + " transferred some health to Organism "+ std::to_string(surroundings[0].orgs[0].ID) + "."<< std::endl;
-	//		}
-	//	}
-	//	else {
-	//		if (rand()%101<health) {
-	//			int maxfoodIndex = 0;
-	//			for (int j = 0; j < surroundings.size(); j++) {
-	//				if (surroundings[j].food > surroundings[maxfoodIndex].food || rand()%101<25) {
-	//					maxfoodIndex = j;
-	//				}
-	//				else if (surroundings[j].food == surroundings[maxfoodIndex].food) {
-	//					if (rand() % 2 == 0) {
-	//						maxfoodIndex = j;
-	//					}
-	//				}
-	//			}
-	//			std::function<void()> move_lambda = [=]() { move(surroundings[maxfoodIndex].deltaX, surroundings[maxfoodIndex].deltaY); };
-	//			actionPlan.push(move_lambda);
-	//			if (maxfoodIndex == 0) {
-	//				std::cout << "Organism " + std::to_string(ID) + " stayed still." << std::endl;
-	//			}
-	//			else {
-	//				std::cout << "Organism " + std::to_string(ID) + " moved." << std::endl;
-	//			}
-	//		}
-	//		else {
-	//			std::function<void()> eat_lambda = [=]() {eat(); };
-	//			actionPlan.push(eat_lambda);
-	//			std::cout << "Organism " + std::to_string(ID) + " ate." << std::endl;
-	//		}
-	//		
-	//	}
-	//	
-	//}
 }
 
 void Organism::move(int deltaX, int deltaY){
@@ -256,10 +251,4 @@ void Organism::attack(int victimID){
 	pendingOrgUpdate.attackrequest.request_made = true;
 	pendingOrgUpdate.attackrequest.victimID = victimID;
 	pendingOrgUpdate.attackrequest.strength = 10;
-}
-
-void Organism::heal(int friendID) {
-	pendingOrgUpdate.healrequest.request_made = true;
-	pendingOrgUpdate.healrequest.friendID = friendID;
-	pendingOrgUpdate.healrequest.strength = 10;
 }

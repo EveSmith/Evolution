@@ -7,18 +7,20 @@
 #include <functional>
 #include "Messages.h"
 
+std::vector<Intel> parse_dna(std::string dna);
+
 class Organism{
 public:
 	//Generates DNA, spawns organism from the void
 	Organism();
-	Organism(int initX, int initY);
-	Organism(std::string str);
+	Organism(int initX, int initY, std::string initDNA);
 
 	std::string print();
 
 	int getID();
 	int getX();
 	int getY();
+	std::string getDNA();
 
 	void receiveUpdate(ServerUpdate update);
 	void checkUpdates();
@@ -61,7 +63,6 @@ private:
 	void eat();
 	void mate(int mateID);
 	void attack(int victimID);
-	void heal(int friendID);
 
 	//Sum of organism's knowledge
 	std::vector<Intel> knowledge;
