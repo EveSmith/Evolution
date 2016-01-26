@@ -21,22 +21,28 @@ int bin_to_int(std::string binary) {
 	return answer;
 }
 
-std::vector<Intel> parse_dna(std::string dna) {
+std::vector<Intel> dna_to_knowledge(std::string dna) {
 	std::vector<Intel> knowledge;
-	for (int i = 0; i < dna.size() / INTEL_LENGTH; i++) {
+	std::string knowledge_dna = dna.substr(6);
+	for (int i = 0; i < dna.size() / (INTEL_LENGTH*GENE_LENGTH); i++) {
 		Observation currentObs;
 		Intel currentIntel;
 		std::string intel_slice = dna.substr(i*INTEL_LENGTH, INTEL_LENGTH*GENE_LENGTH);
-		std::cout << intel_slice;
+		std::cout << "Intel Slice: " << intel_slice << std::endl;
 		//Subject
+		std::cout << "Parsing Subject... ";
 		std::string subjects[] = {"Org", "Org", "Org", "Org", "Org", "Food", "Food", "Food", "Food", "Food"};
 		int subjectVal = bin_to_int(intel_slice.substr(0, GENE_LENGTH));
 		currentObs.subject = subjects[subjectVal];
+		std::cout << subjectVal << std::endl;
 		//Trait
+		std::cout << "Parsing Trait... ";
 		int traitVal = bin_to_int(intel_slice.substr(GENE_LENGTH, GENE_LENGTH));
 		std::string traits[] = { "Mateable", "Proximity", "Proximity", "Color", "Color", "Size", "Size", "Newborn" };
 		currentObs.trait = traits[traitVal];
+		std::cout << traitVal << std::endl;
 		//Value
+		std::cout << "Parsing Value... ";
 		int valueVal = bin_to_int(intel_slice.substr(2 * GENE_LENGTH, GENE_LENGTH));
 		if (currentObs.trait == "Mateable") {
 			std::string values[] = { "yes", "yes", "yes", "yes", "no", "no", "no", "no" };
@@ -57,18 +63,34 @@ std::vector<Intel> parse_dna(std::string dna) {
 			std::string values[] = { "yes", "yes", "yes", "yes", "no", "no", "no", "no" };
 			currentObs.value = values[valueVal];
 		}
+		std::cout << valueVal << std::endl;
 		//Action
+		std::cout << "Parsing Action... ";
 		currentIntel.observation = currentObs;
 		int actionVal = bin_to_int(intel_slice.substr(3 * GENE_LENGTH, GENE_LENGTH));
 		std::string actions[] = { "Ignore", "Eat", "Eat", "Attack", "Move Away", "Move Toward", "Mating On", "Mating Off" };
 		currentIntel.action = actions[actionVal];
+		std::cout << actionVal << std::endl;
 		//Rating
+		std::cout << "Parsing Rating... " << std::endl;
 		currentIntel.rating = bin_to_int(intel_slice.substr(4 * GENE_LENGTH, GENE_LENGTH));
 
 		knowledge.push_back(currentIntel);
 	}
 	return knowledge;
 }
+
+
+Traits parse_traits(std::string dna) {
+	Traits traits;
+	traits.Mateable = false;
+	traits.Newborn = true;
+	traits.Health = 100;
+	traits.Color = bin_to_int(dna.substr(0, 3));
+	traits.Size = bin_to_int(dna.substr(3, 3));
+	return traits;
+}
+
 
 /*
 Organism handles:
@@ -80,20 +102,19 @@ Organism::Organism(){
 	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
-	this->health = 100;
-
 	//Generate some binary DNA
 	DNA = "";
-	for (int i = 0; i < GENE_LENGTH*INTEL_LENGTH*1; i++){
+	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*1)+6; i++){
 		DNA.append(std::to_string(rand() % 2));
 	}
-	std::cout << DNA;
+
+	//Set traits
+	this->traits = parse_traits(DNA);
 
 	//set org position to 0,0
 	position.fill(0);
 
 	pendingServerUpdate = { true, 0, 0 };
-	newborn = true;
 
 	//establish default surroundings?
 }
@@ -103,17 +124,16 @@ Organism::Organism(int initX, int initY, std::string initDNA){
 	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
-	this->health = 100;
-
-	//Generate some length of DNA (currently length 1)
 	DNA = initDNA;
+
+	//Set traits
+	this->traits = parse_traits(DNA);
 
 	//set org position to 0,0
 	position[0] = initX;
 	position[1] = initY;
 
 	pendingServerUpdate = { true, 0, 0 };
-	newborn = true;
 
 	//establish default surroundings?
 }
@@ -121,7 +141,7 @@ Organism::Organism(int initX, int initY, std::string initDNA){
 std::string Organism::print(){
 	std::string info = "Organism: " + std::to_string(ID) + "\n\tPosition: " +
 		std::to_string(position[0]) + "," + std::to_string(position[1]) + "\n" +
-		"\tHealth: " + std::to_string(health) + "\n" +
+		"\tHealth: " + std::to_string(traits.Health) + "\n" +
 		"\tDNA: " + DNA + "\n";
 		//"\tResources on position: " + std::to_string(surroundings[0].food) + "\n";
 	return info;
@@ -159,13 +179,8 @@ void Organism::checkUpdates(){
 }
 
 void Organism::injureSelf(int amount){
-	health -= amount;
-	if (health < 0) { health = 0; }
-}
-
-void Organism::healSelf(int amount){
-	health += amount;
-	if (health > 100) { health = 100; }
+	traits.Health -= amount;
+	if (traits.Health < 0) { traits.Health = 0; }
 }
 
 
@@ -175,22 +190,21 @@ void Organism::sendUpdate(std::queue<OrgUpdate> &inbox){
 	pendingOrgUpdate.eatrequest.request_made = false;
 	pendingOrgUpdate.attackrequest.request_made = false;
 	pendingOrgUpdate.materequest.request_made = false;
-	pendingOrgUpdate.healrequest.request_made = false;
 }
 
 
 void Organism::updateSelf(){
 	pendingOrgUpdate.senderID = ID;
-	health -= 4;
+	traits.Health -= 4;
 
-	if (health <= 0) {
+	if (traits.Health <= 0) {
 		pendingOrgUpdate.alive = false;
 	}
 
 	pendingOrgUpdate.oldX = position[0];
 	pendingOrgUpdate.oldY = position[1];
 
-	if (!newborn) {
+	if (!traits.Newborn) {
 		reason();
 
 		while (!actionPlan.empty()) {
@@ -200,7 +214,7 @@ void Organism::updateSelf(){
 	}
 	else {
 		move(0, 0);
-		newborn = false;
+		traits.Newborn = false;
 	}
 	pendingOrgUpdate.sensoryrequest = { perception };
 

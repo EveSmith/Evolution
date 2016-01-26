@@ -38,7 +38,7 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 
 		if (currUpdate.eatrequest.request_made) {
 			E->changeResources(currUpdate.oldX, currUpdate.oldY, "Food", currUpdate.eatrequest.amount);
-			orgList[currUpdate.senderID]->healSelf(currUpdate.eatrequest.amount);
+			//orgList[currUpdate.senderID]->healSelf(currUpdate.eatrequest.amount);
 		}
 		if (currUpdate.attackrequest.request_made) {
 			orgList[currUpdate.attackrequest.victimID]->injureSelf(currUpdate.attackrequest.strength);

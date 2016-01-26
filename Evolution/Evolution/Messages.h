@@ -17,11 +17,7 @@ struct MateRequest {
 	bool request_made = false;
 	int mateID;
 };
-struct HealRequest {
-	bool request_made = false;
-	int friendID;
-	int strength;
-};
+
 
 //Request server for knowledge of surroundings
 struct SensoryRequest{
@@ -38,7 +34,6 @@ struct OrgUpdate{
 	EatRequest eatrequest;
 	AttackRequest attackrequest;
 	MateRequest materequest;
-	HealRequest healrequest;
 };
 
 
@@ -48,14 +43,6 @@ struct OrgSense{
 	//TO DO: ACTUALLY LET ORGS PERCEIVE STUFF ABOUT OTHER ORGS
 	int ID;
 };
-
-
-////DELETE LATER
-//struct CellSense{
-//	int deltaX, deltaY; //difference in coords from org position
-//	int food;
-//	std::vector<OrgSense> orgs;
-//};
 
 struct Surroundings {
 	std::vector<std::pair<std::pair<int, int>, OrgSense>> orgsNearby;
@@ -77,9 +64,17 @@ struct Intel {
 	int rating;
 };
 
+struct Traits {
+	int Health;
+	int Color;
+	int Size;
+	bool Mateable;
+	bool Newborn;
+};
+
 
 //Type sent from server to organisms to update them.
-struct ServerUpdate{
+struct ServerUpdate {
 	bool checked;
 	int newX, newY;
 	Surroundings surroundings;

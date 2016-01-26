@@ -7,7 +7,9 @@
 #include <functional>
 #include "Messages.h"
 
-std::vector<Intel> parse_dna(std::string dna);
+std::vector<Intel> dna_to_knowledge(std::string dna);
+
+Traits parse_traits(std::string dna);
 
 class Organism{
 public:
@@ -25,7 +27,6 @@ public:
 	void receiveUpdate(ServerUpdate update);
 	void checkUpdates();
 	void injureSelf(int amount);
-	void healSelf(int amount);
 
 	//Send update to the server
 	void sendUpdate(std::queue<OrgUpdate> &inbox);
@@ -34,9 +35,8 @@ public:
 
 private:
 	int ID;
-	int health; //org dies when health reaches 0
+	Traits traits;
 	std::string DNA;
-	bool newborn;
 
 	//Distance around them they can perceive
 	int perception = 1;

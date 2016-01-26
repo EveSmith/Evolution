@@ -1,4 +1,4 @@
-	#include <random>
+#include <random>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -28,8 +28,8 @@ int main(){
 	srand(SEED);
 
 	Organism neworg = Organism();
-	std::cout << neworg.getDNA() << std::endl;
-	std::vector<Intel> knowledge = parse_dna(neworg.getDNA());
+	std::cout << "Organism DNA: " + neworg.getDNA() << std::endl;
+	std::vector<Intel> knowledge = dna_to_knowledge(neworg.getDNA());
 	for (int i = 0; i < knowledge.size(); i++) {
 		std::cout << "Subject: " << knowledge[i].observation.subject << std::endl;
 		std::cout << "Trait: " << knowledge[i].observation.trait << std::endl;
