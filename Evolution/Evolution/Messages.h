@@ -65,16 +65,16 @@ struct Surroundings {
 
 //Observations
 struct Observation {
-	std::string ObsType;
-	std::string TraitCategory;
+	std::string subject;
 	std::string trait;
+	std::string value;
 };
 
 //Individual units of knowledge: associations between observations and actions
 struct Intel {
 	Observation observation;
 	std::string action;
-	float goodness;
+	int rating;
 };
 
 

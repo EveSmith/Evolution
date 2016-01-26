@@ -43,13 +43,10 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 		if (currUpdate.attackrequest.request_made) {
 			orgList[currUpdate.attackrequest.victimID]->injureSelf(currUpdate.attackrequest.strength);
 		}
-		if (currUpdate.materequest.request_made) {
-			official_org_list->push_back(new Organism(rand() % width, rand()%height));
-			addOrg(official_org_list->back());
-		}
-		if (currUpdate.healrequest.request_made) {
-			orgList[currUpdate.healrequest.friendID]->healSelf(currUpdate.healrequest.strength);
-		}
+		//if (currUpdate.materequest.request_made) {
+		//	official_org_list->push_back(new Organism(rand() % width, rand()%height));
+		//	addOrg(official_org_list->back());
+		//}
 
 		//confirmUpdate(currUpdate, servUpdate); //Remove and roll into orgs??
 		//Move Org from old position to new position
