@@ -44,7 +44,7 @@ private:
 	Surroundings surroundings;
 
 	//Compares input observation to current surroundings, decides if situation is similar
-	float compare_surroundings(Observation obs);
+	std::map<std::array<int, 2>, float> compare_surroundings(Situation obs); //Observation
 
 	std::array<int, 2> position;
 	ServerUpdate pendingServerUpdate;

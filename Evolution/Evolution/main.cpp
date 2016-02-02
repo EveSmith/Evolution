@@ -31,9 +31,9 @@ int main(){
 	std::cout << "Organism DNA: " + neworg.getDNA() << std::endl;
 	std::vector<Intel> knowledge = dna_to_knowledge(neworg.getDNA());
 	for (int i = 0; i < knowledge.size(); i++) {
-		std::cout << "Subject: " << knowledge[i].observation.subject << std::endl;
-		std::cout << "Trait: " << knowledge[i].observation.trait << std::endl;
-		std::cout << "Value: " << knowledge[i].observation.value << std::endl;
+		std::cout << "Subject: " << knowledge[i].situation.subject << std::endl;
+		std::cout << "Trait: " << knowledge[i].situation.trait << std::endl;
+		std::cout << "Value: " << knowledge[i].situation.value << std::endl;
 		std::cout << "Action: " << knowledge[i].action << std::endl;
 		std::cout << "Rating: " << knowledge[i].rating << std::endl;
 	}

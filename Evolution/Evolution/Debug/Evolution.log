@@ -1,5 +1,7 @@
 ﻿  Organism.cpp
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(27): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(239): warning C4018: '<': signed/unsigned mismatch
-  Evolution.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution\Debug\Evolution.exe
-  Evolution.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution\Debug\Evolution.pdb (Partial PDB)
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(28): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(231): warning C4018: '<': signed/unsigned mismatch
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(241): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(257): error C2059: syntax error: '}'
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(278): error C2143: syntax error: missing ';' before 'if'
+c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(294): warning C4018: '<': signed/unsigned mismatch

@@ -40,18 +40,22 @@ struct OrgUpdate{
 
 //Organism's perception of other organisms
 struct OrgSense{
-	//TO DO: ACTUALLY LET ORGS PERCEIVE STUFF ABOUT OTHER ORGS
 	int ID;
+	bool mateable;
+	std::array<int, 2> position; //relative position from self
+	int color;
+	int size;
+	bool newborn;
 };
 
 struct Surroundings {
-	std::vector<std::pair<std::pair<int, int>, OrgSense>> orgsNearby;
-	std::vector <std::pair<std::pair<int, int>, int>> foodNearby;
+	std::vector<std::pair<std::array<int, 2>, OrgSense>> orgsNearby; //<Relative location from self, Org sense>
+	std::vector <std::pair<std::array<int, 2>, int>> foodNearby; //<Relative location from self, food amount>
 };
 
 
-//Observations
-struct Observation {
+//Situation
+struct Situation {
 	std::string subject;
 	std::string trait;
 	std::string value;
@@ -59,7 +63,7 @@ struct Observation {
 
 //Individual units of knowledge: associations between observations and actions
 struct Intel {
-	Observation observation;
+	Situation situation;
 	std::string action;
 	int rating;
 };

@@ -84,52 +84,57 @@ void Server::confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate){
 //IS ALSO EXTREMELY MESSY!! FIX LATER!!
 Surroundings Server::compileSurroundings(int ID, int x, int y) {
 	Surroundings toReturn;
+	std::array<int, 2> positionTemp = { 0,0 };
 
 	//Compile surrounding food amounts
-	toReturn.foodNearby.push_back(std::make_pair(std::make_pair(0, 0), E->getResources(x, y, "Food")));
-	//Try-excepts to catch out of bounds errors if org is on edge of map, probably not great form...
-	if(x!=width-1) { toReturn.foodNearby.push_back(std::make_pair(std::make_pair(1, 0), E->getResources(x + 1, y, "Food"))); }
-	if(y!=height-1){ toReturn.foodNearby.push_back(std::make_pair(std::make_pair(0, 1), E->getResources(x, y+1, "Food"))); }
-	if(x!=0) { toReturn.foodNearby.push_back(std::make_pair(std::make_pair(-1, 0), E->getResources(x-1, y, "Food"))); }
-	if(y!=0) { toReturn.foodNearby.push_back(std::make_pair(std::make_pair(0, -1), E->getResources(x, y-1, "Food"))); }
+	toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x, y, "Food")));
+	if (x != width - 1) { positionTemp = { 1,0 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x + 1, y, "Food"))); }
+	if(y!=height-1){ positionTemp = { 0,1 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x, y+1, "Food"))); }
+	if(x!=0) { positionTemp = { -1,0 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x-1, y, "Food"))); }
+	if(y!=0) { positionTemp = { 0,-1 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x, y-1, "Food"))); }
 
 	//Compile surrounding organisms
 	std::vector<int> currentOrgList = E->getOrgs(x, y);
 	OrgSense currentOrgSense;
+	positionTemp = { 0,0 };
 	for (int i = 0; i < currentOrgList.size(); i++) {
 		currentOrgSense.ID = currentOrgList[i];
-		toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(0, 0), currentOrgSense));
+		toReturn.orgsNearby.push_back(std::make_pair(positionTemp, currentOrgSense));
 	}
 	if (x != width - 1) {
 		std::vector<int> currentOrgList = E->getOrgs(x + 1, y);
 		OrgSense currentOrgSense;
+		positionTemp = { 1,0 };
 		for (int i = 0; i < currentOrgList.size(); i++) {
 			currentOrgSense.ID = currentOrgList[i];
-			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(1, 0), currentOrgSense));
+			toReturn.orgsNearby.push_back(std::make_pair(positionTemp, currentOrgSense));
 		}
 	}
 	if (y != height - 1) {
 		std::vector<int> currentOrgList = E->getOrgs(x, y+1);
 		OrgSense currentOrgSense;
+		positionTemp = { 0,1 };
 		for (int i = 0; i < currentOrgList.size(); i++) {
 			currentOrgSense.ID = currentOrgList[i];
-			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(0, 1), currentOrgSense));
+			toReturn.orgsNearby.push_back(std::make_pair(positionTemp, currentOrgSense));
 		}
 	}
 	if (x != 0) {
 		std::vector<int> currentOrgList = E->getOrgs(x-1, y);
 		OrgSense currentOrgSense;
+		positionTemp = { -1,0 };
 		for (int i = 0; i < currentOrgList.size(); i++) {
 			currentOrgSense.ID = currentOrgList[i];
-			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(-1, 0), currentOrgSense));
+			toReturn.orgsNearby.push_back(std::make_pair(positionTemp, currentOrgSense));
 		}
 	}
 	if (y != 0) {
 		std::vector<int> currentOrgList = E->getOrgs(x, y-1);
 		OrgSense currentOrgSense;
+		positionTemp = { 0,-1 };
 		for (int i = 0; i < currentOrgList.size(); i++) {
 			currentOrgSense.ID = currentOrgList[i];
-			toReturn.orgsNearby.push_back(std::make_pair(std::make_pair(0, -1), currentOrgSense));
+			toReturn.orgsNearby.push_back(std::make_pair(positionTemp, currentOrgSense));
 		}
 	}
 
