@@ -84,4 +84,10 @@ struct ServerUpdate {
 	Surroundings surroundings;
 };
 
+struct Params {
+	int deltaX;
+	int deltaY;
+	int targetID;
+};
+
 #endif //MESSAGES_H

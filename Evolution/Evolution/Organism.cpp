@@ -69,7 +69,7 @@ std::vector<Intel> dna_to_knowledge(std::string dna) {
 		std::cout << "Parsing Action... ";
 		currentIntel.situation = currentSit;
 		int actionVal = bin_to_int(intel_slice.substr(3 * GENE_LENGTH, GENE_LENGTH));
-		std::string actions[] = { "Ignore", "Eat", "Eat", "Attack", "Move Away", "Move Toward", "Mating On", "Mating Off" };
+		std::string actions[] = { "Idle", "Eat", "Eat", "Attack", "MoveAway", "MoveToward", "MatingOn", "MatingOff" };
 		currentIntel.action = actions[actionVal];
 		std::cout << actionVal << std::endl;
 		//Rating
@@ -208,13 +208,10 @@ void Organism::updateSelf(){
 	if (!traits.Newborn) {
 		reason();
 
-		while (!actionPlan.empty()) {
-			actionPlan.front()();
-			actionPlan.pop();
-		}
+		actionPlan.first(actionPlan.second);
 	}
 	else {
-		move(0, 0);
+		//move(0, 0);
 		traits.Newborn = false;
 	}
 	pendingOrgUpdate.sensoryrequest = { perception };
@@ -222,11 +219,11 @@ void Organism::updateSelf(){
 	std::cout << std::endl;
 }
 
-//Returns a map of locations to their associated comparison ratings
-std::map<std::array<int,2>, float> Organism::compare_surroundings(Situation sit) {
+//Returns comparison rating, as well as an optional string to append to the action (specify locations, org IDs, etc.)
+std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situation sit) {
 	float comparison_rating = 0;
 	std::array<int, 2> location_of_interest;
-	std::map<std::array<int, 2>, float> toReturn;
+	std::vector<std::pair<float, std::string>> toReturn;
 
 	if (sit.subject == "Org" && !surroundings.orgsNearby.empty()) {
 		for (int i = 0; i < surroundings.orgsNearby.size(); i++) {
@@ -274,7 +271,7 @@ std::map<std::array<int,2>, float> Organism::compare_surroundings(Situation sit)
 					comparison_rating += 1;
 				}
 			}
-			toReturn[location_of_interest] += comparison_rating;
+			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0]) + "," + std::to_string(location_of_interest[1])));
 		}
 	}
 	else if (sit.subject == "Food") {
@@ -304,42 +301,118 @@ std::map<std::array<int,2>, float> Organism::compare_surroundings(Situation sit)
 					comparison_rating += 1;
 				}
 			}
-			toReturn[location_of_interest] += comparison_rating;
+			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0])+","+std::to_string(location_of_interest[1])));
 		}
 	}
 	return toReturn;
 }
 
-void Organism::reason(){
-	std::map<std::string, std::pair<float, std::array<int,2>>> action_ratings; //map<action, pair<rating, location of interest>>
-	for (int i = 0; i < knowledge.size(); i++) {
-		//Add new action if not seen before
-		if (action_ratings.find(knowledge[i].action) == action_ratings.end()) {
-			action_ratings[knowledge[i].action];
+std::pair<std::function<void(Params p)>,Params> Organism::generate_action_function(std::string actionString) {
+	std::function<void(const Organism&, Params)> function;
+	Params p;
+	std::size_t split = actionString.find(" "); //Find delim, if exists
+	std::string actionSuffix = actionString.substr(split); //Split on delim
+	std::string action = actionString.substr(0, actionString.size() - actionSuffix.size()); //Get action name
+	int deltaY, deltaX;
+	int targetID;
+	if (actionSuffix.empty()) {
+		actionSuffix = actionSuffix.substr(1); //strip whitespace at beginning
+		split = actionSuffix.find(",");
+		if (split != actionSuffix.size()) { //If suffix = coordinates
+			std::string temp1 = actionSuffix.substr(split); //Split coords
+			temp1 = temp1.substr(1); //Strip comma
+			deltaY = stoi(temp1);
+			deltaX = stoi(actionSuffix.substr(0, actionSuffix.size() - temp1.size()));
 		}
-		std::pair<float, std::array<int, 2>> current_action = compare_surroundings(knowledge[i].situation);//FIX NOW
-		current_action.first = current_action.first * knowledge[i].rating;
-		action_ratings[knowledge[i].action].first += current_action.first;
+		else {
+			targetID = stoi(actionSuffix);
+		}
 	}
+	if (action == "Idle") {
+		function = &(this->idle);
+	}
+	else if (action == "Eat") {
+		function = &(this->eat);
+	}
+	else if (action == "Attack") {
+		function = &(this->attack);
+	}
+	else if (action == "MoveToward") {
+		function = &(this->move);
+		p.deltaX = deltaX;
+		p.deltaY = deltaY;
+	}
+	else if (action == "MoveAway") {
+		function = &(this->move);
+		p.deltaX = 0 - deltaX;
+		p.deltaY = 0 - deltaY;
+	}
+	else if (action == "MatingOn") {
+		function = &(this->toggleMating);
+	}
+	else if (action == "MatingOff") {
+		function = &(this->toggleMating);
+	}
+
+	return std::make_pair(function, p);
 }
 
-void Organism::move(int deltaX, int deltaY){
-	pendingOrgUpdate.newX = this->position[0]+deltaX;
-	pendingOrgUpdate.newY = this->position[1]+deltaY;
+void Organism::reason(){
+	std::map<std::string, float> action_ratings;
+	for (int i = 0; i < knowledge.size(); i++) {
+		std::vector<std::pair<float, std::string>> current_location_action_ratings = compare_surroundings(knowledge[i].situation);
+		for (int j = 0; j < current_location_action_ratings.size(); j++) {
+			std::string full_action = knowledge[i].action + current_location_action_ratings[j].second;
+			if (action_ratings.find(full_action) == action_ratings.end()) {
+				action_ratings[full_action] = 0;
+			}
+			action_ratings[full_action] += current_location_action_ratings[j].first;
+		}
+	}
+	std::pair<std::string, float> max_action;
+	bool beginning = true;
+	for (auto it = action_ratings.begin(); it != action_ratings.end(); it++) {
+		if (beginning) {
+			max_action = std::make_pair(it->first, it->second);
+			beginning = false;
+		}
+		else {
+			if (it->second > max_action.second) {
+				max_action = std::make_pair(it->first, it->second);
+			}
+			else if (it->second == max_action.second) {
+				if (rand()%2 == 0) {
+					max_action = std::make_pair(it->first, it->second);
+				}
+			}
+		}
+	}
+	actionPlan = generate_action_function(max_action.first);
 }
 
-void Organism::eat(){
+void Organism::idle(Params p) {
+	//Do nothing?
+	//Specifically request to idle?
+	//Whatever...
+}
+
+void Organism::eat(Params p){
 	pendingOrgUpdate.eatrequest.request_made = true;
 	pendingOrgUpdate.eatrequest.amount = 5;
 }
 
-void Organism::mate(int mateID){
-	pendingOrgUpdate.materequest.request_made = true;
-	pendingOrgUpdate.materequest.mateID = mateID;
+void Organism::attack(Params p){
+	pendingOrgUpdate.attackrequest.request_made = true;
+	pendingOrgUpdate.attackrequest.victimID = p.targetID;
+	pendingOrgUpdate.attackrequest.strength = 10;
 }
 
-void Organism::attack(int victimID){
-	pendingOrgUpdate.attackrequest.request_made = true;
-	pendingOrgUpdate.attackrequest.victimID = victimID;
-	pendingOrgUpdate.attackrequest.strength = 10;
+void Organism::move(Params p) {
+	pendingOrgUpdate.newX = this->position[0] + p.deltaX;
+	pendingOrgUpdate.newY = this->position[1] + p.deltaY;
+}
+
+void Organism::toggleMating(Params p) {
+	traits.Mateable = !traits.Mateable;
+	//Notify server of state change
 }

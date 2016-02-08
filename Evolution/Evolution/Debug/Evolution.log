@@ -1,7 +1,15 @@
 ﻿  Organism.cpp
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(28): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(231): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(241): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(257): error C2059: syntax error: '}'
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(278): error C2143: syntax error: missing ';' before 'if'
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(294): warning C4018: '<': signed/unsigned mismatch
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(28): warning C4018: '<': signed/unsigned mismatch
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(229): warning C4018: '<': signed/unsigned mismatch
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(239): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(278): warning C4018: '<': signed/unsigned mismatch
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(280): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(332): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(335): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(338): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(341): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(346): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(351): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(354): error C2276: '&': illegal operation on bound member function expression
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(362): warning C4018: '<': signed/unsigned mismatch
+c:\users\eve\desktop\evolution\evolution\evolution\organism.cpp(364): warning C4018: '<': signed/unsigned mismatch
