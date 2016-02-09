@@ -36,17 +36,16 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 			killOrg(currUpdate.senderID);
 		}
 
-		if (currUpdate.eatrequest.request_made) {
-			E->changeResources(currUpdate.oldX, currUpdate.oldY, "Food", currUpdate.eatrequest.amount);
-			//orgList[currUpdate.senderID]->healSelf(currUpdate.eatrequest.amount);
+		else if (currUpdate.action == "Eat") {
+			E->changeResources(currUpdate.oldX, currUpdate.oldY, "Food", currUpdate.amount);
+			orgList[currUpdate.senderID]->healing(currUpdate.amount);
 		}
-		if (currUpdate.attackrequest.request_made) {
-			orgList[currUpdate.attackrequest.victimID]->injureSelf(currUpdate.attackrequest.strength);
+		else if (currUpdate.action == "Attack") {
+			orgList[currUpdate.targetID]->injury(currUpdate.amount);
 		}
-		//if (currUpdate.materequest.request_made) {
-		//	official_org_list->push_back(new Organism(rand() % width, rand()%height));
-		//	addOrg(official_org_list->back());
-		//}
+		else if (currUpdate.action == "ToggleMating") {
+
+		}
 
 		//confirmUpdate(currUpdate, servUpdate); //Remove and roll into orgs??
 		//Move Org from old position to new position
@@ -138,118 +137,8 @@ Surroundings Server::compileSurroundings(int ID, int x, int y) {
 		}
 	}
 
-	//for (int i = 0; i <= 4; i++) {
-	//	if (i == 0) {
-	//		//MIDDLE (CURRENT SPACE ORG IS ON)
-
-	//		currentCell.deltaX = 0;
-	//		currentCell.deltaY = 0;
-	//		//Get resource info
-	//		currentCell.food = E->getResources(x, y, "Food");
-	//		//Get org info
-	//		std::vector<int> tempOrgList = E->getOrgs(x, y);
-	//		std::vector<OrgSense> orgs;
-
-	//		//Put org IDs (except own ID) into OrgSense objects
-	//		for (int j = 0; j < tempOrgList.size(); j++) {
-	//			if (tempOrgList[j] != ID) {
-	//				OrgSense tempOrgSense = { tempOrgList[j] };
-	//				orgs.push_back(tempOrgSense);
-	//			}
-	//		}
-	//		currentCell.orgs = orgs;
-	//		toReturn.push_back(currentCell);
-	//	}
-
-	//	else {
-	//		//UP
-
-	//		if(y!=0) {
-	//			currentCell.deltaX = 0;
-	//			currentCell.deltaY = -i;
-	//			//Get resource info
-	//			currentCell.food = E->getResources(x, y - i, "Food");
-	//			//Get org info
-	//			std::vector<int> tempOrgList = E->getOrgs(x, y - 1);
-	//			std::vector<OrgSense> orgs;
-
-	//			//Put org IDs (except own ID) into OrgSense objects
-	//			for (int j = 0; j < tempOrgList.size(); j++) {
-	//				OrgSense tempOrgSense = { tempOrgList[j] };
-	//				orgs.push_back(tempOrgSense);
-	//			}
-	//			currentCell.orgs = orgs;
-	//			toReturn.push_back(currentCell);
-	//		}
-
-
-	//		//RIGHT
-	//		if(x!=width-1) {
-	//			currentCell.deltaX = i;
-	//			currentCell.deltaY = 0;
-	//			//Get resource info
-	//			currentCell.food = E->getResources(x + i, y, "Food");
-	//			//Get org info
-	//			std::vector<int> tempOrgList = E->getOrgs(x + 1, y);
-	//			std::vector<OrgSense> orgs;
-
-	//			//Put org IDs (except own ID) into OrgSense objects
-	//			for (int j = 0; j < tempOrgList.size(); j++) {
-	//				OrgSense tempOrgSense = { tempOrgList[j] };
-	//				orgs.push_back(tempOrgSense);
-	//			}
-	//			currentCell.orgs = orgs;
-	//			toReturn.push_back(currentCell);
-	//		}
-
-
-	//		//DOWN
-
-	//		if(y!=height-1) {
-	//			currentCell.deltaX = 0;
-	//			currentCell.deltaY = i;
-	//			//Get resource info
-	//			currentCell.food = E->getResources(x, y + i, "Food");
-	//			//Get org info
-	//			std::vector<int> tempOrgList = E->getOrgs(x, y + 1);
-	//			std::vector<OrgSense> orgs;
-
-	//			//Put org IDs (except own ID) into OrgSense objects
-	//			for (int j = 0; j < tempOrgList.size(); j++) {
-	//				OrgSense tempOrgSense = { tempOrgList[j] };
-	//				orgs.push_back(tempOrgSense);
-	//			}
-	//			currentCell.orgs = orgs;
-	//			toReturn.push_back(currentCell);
-	//		}
-
-
-	//		//LEFT
-
-	//		if(x!=0) {
-	//			currentCell.deltaX = -i;
-	//			currentCell.deltaY = 0;
-	//			//Get resource info
-	//			currentCell.food = E->getResources(x - i, y, "Food");
-	//			//Get org info
-	//			std::vector<int> tempOrgList = E->getOrgs(x - i, y);
-	//			std::vector<OrgSense> orgs;
-
-	//			//Put org IDs (except own ID) into OrgSense objects
-	//			for (int j = 0; j < tempOrgList.size(); j++) {
-	//				OrgSense tempOrgSense = { tempOrgList[j] };
-	//				orgs.push_back(tempOrgSense);
-	//			}
-	//			currentCell.orgs = orgs;
-	//			toReturn.push_back(currentCell);
-	//		}
-	//	}
-	//}
-
 	return toReturn;
 }
-
-
 
 void Server::addOrg(Organism* org){
 	orgList[org->getID()] = org;

@@ -4,36 +4,18 @@
 #include <vector>
 #include <map>
 
-struct EatRequest {
-	bool request_made = false;
-	int amount;
-};
-struct AttackRequest {
-	bool request_made = false;
-	int victimID;
-	int strength;
-};
-struct MateRequest {
-	bool request_made = false;
-	int mateID;
-};
-
-
-//Request server for knowledge of surroundings
-struct SensoryRequest{
-	int perception; //how many cells to give info about
-};
 
 //Type sent from organism to server to request some action.
 struct OrgUpdate{
 	int senderID; //Unique ID number
-	bool alive = true; //Is the org dead or not
 	int oldX, oldY; //Previous position (for finding purposes)
+
+	bool alive = true; //Is the org dead or not
+
+	std::string action;
 	int newX, newY; //Desired new position
-	SensoryRequest sensoryrequest;
-	EatRequest eatrequest;
-	AttackRequest attackrequest;
-	MateRequest materequest;
+	int targetID; //ID of attack victim
+	int amount; //Amount to eat or to attack
 };
 
 
@@ -82,12 +64,6 @@ struct ServerUpdate {
 	bool checked;
 	int newX, newY;
 	Surroundings surroundings;
-};
-
-struct Params {
-	int deltaX;
-	int deltaY;
-	int targetID;
 };
 
 #endif //MESSAGES_H

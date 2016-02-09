@@ -26,7 +26,9 @@ public:
 
 	void receiveUpdate(ServerUpdate update);
 	void checkUpdates();
-	void injureSelf(int amount);
+	void setSurroundings(Surroundings sur);
+	void injury(int amount);
+	void healing(int amount);
 
 	//Send update to the server
 	void sendUpdate(std::queue<OrgUpdate> &inbox);
@@ -45,24 +47,21 @@ private:
 
 	//Compares input observation to current surroundings, decides if situation is similar
 	std::vector<std::pair<float, std::string>> compare_surroundings(Situation obs); //Observation
-	std::pair<std::function<void(Params p)>,Params> generate_action_function(std::string actionString);
+	void generate_action_function(std::string actionString);
 
 	std::array<int, 2> position;
 	ServerUpdate pendingServerUpdate;
 	OrgUpdate pendingOrgUpdate;
 
-	//Queue of planned actions
-	std::pair<std::function<void(Params p)>, Params> actionPlan;
-
 	//Generates action that the org wants to complete this turn
 	//(Puts action in actionPlan)
 	void reason();
 
-	void idle(Params p);
-	void eat(Params p);
-	void attack(Params p);
-	void move(Params p);
-	void toggleMating(Params p);
+	void idle();
+	void eat();
+	void attack(int victimID);
+	void move(int deltaX, int deltaY);
+	void toggleMating();
 
 	//Sum of organism's knowledge
 	std::vector<Intel> knowledge;

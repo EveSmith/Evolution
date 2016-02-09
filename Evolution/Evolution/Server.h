@@ -23,9 +23,11 @@ public:
 	void update(std::queue<OrgUpdate> &inbox);
 	void confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate);
 	Surroundings compileSurroundings(int ID, int x, int y);
+	Surroundings birthUpdate(int ID, int x, int y);
 
 	void addOrg(Organism* org);
 	void killOrg(int id);
+	
 
 private:
 	int width, height;
