@@ -14,14 +14,15 @@ Traits parse_traits(std::string dna);
 class Organism{
 public:
 	//Generates DNA, spawns organism from the void
-	Organism();
-	Organism(int initX, int initY, std::string initDNA);
+	Organism(int w, int h);
+	Organism(int w, int h, int initX, int initY, std::string initDNA);
 
 	std::string print();
 
 	int getID();
 	int getX();
 	int getY();
+	Traits getTraits();
 	std::string getDNA();
 
 	void receiveUpdate(ServerUpdate update);
@@ -39,6 +40,7 @@ private:
 	int ID;
 	Traits traits;
 	std::string DNA;
+	std::array<int, 2> map_dimensions;
 
 	//Distance around them they can perceive
 	int perception = 1;
@@ -61,7 +63,8 @@ private:
 	void eat();
 	void attack(int victimID);
 	void move(int deltaX, int deltaY);
-	void toggleMating();
+	void matingOn();
+	void matingOff();
 
 	//Sum of organism's knowledge
 	std::vector<Intel> knowledge;

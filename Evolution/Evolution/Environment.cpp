@@ -109,6 +109,9 @@ std::vector<int> Environment::getOrgs(int x, int y) {
 	return matrix[y*width + x]->getOrgs();
 }
 
+std::vector<int> Environment::getOrgs(int index) {
+	return matrix[index]->getOrgs();
+}
 
 //Gets complete resource info for a cell
 std::map<std::string, int> Environment::getResources(int x, int y){

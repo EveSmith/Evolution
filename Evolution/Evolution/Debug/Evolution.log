@@ -1,6 +1,3 @@
 ﻿  main.cpp
-c:\users\eve\desktop\evolution\evolution\evolution\main.cpp(22): warning C4018: '<': signed/unsigned mismatch
-c:\users\eve\desktop\evolution\evolution\evolution\main.cpp(30): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
-c:\users\eve\desktop\evolution\evolution\evolution\main.cpp(75): warning C4018: '<': signed/unsigned mismatch
-  Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.exe
-  Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.pdb (Partial PDB)
+  Evolution.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution\Debug\Evolution.exe
+  Evolution.vcxproj -> C:\Users\Evie\Desktop\Evolution\Evolution\Debug\Evolution.pdb (Partial PDB)

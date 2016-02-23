@@ -52,7 +52,7 @@ std::vector<Intel> dna_to_knowledge(std::string dna) {
 			currentSit.value = values[valueVal];
 		}
 		else if (currentSit.trait == "Color") {
-			currentSit.value = valueVal;
+			currentSit.value = std::to_string(valueVal);
 		}
 		else if (currentSit.trait == "Size") {
 			std::string values[] = { "smaller", "smaller", "smaller", "similar", "similar", "larger", "larger", "larger" };
@@ -95,14 +95,14 @@ Organism handles:
 	Health -- Server does not need to know health of organisms
 */
 
-Organism::Organism(){
+Organism::Organism(int w, int h){
 	//Unique ID for each organism, hopefully.
 	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
 	//Generate some binary DNA
 	DNA = "";
-	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*50)+6; i++){
+	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*500)+6; i++){
 		DNA.append(std::to_string(rand() % 2));
 	}
 	this->knowledge = dna_to_knowledge(DNA);
@@ -110,13 +110,15 @@ Organism::Organism(){
 	//Set traits
 	this->traits = parse_traits(DNA);
 
-	//set org position to 0,0
-	position.fill(0);
+	//set org position randomly
+	position[0] = rand() % w;
+	position[1] = rand() % h;
+	map_dimensions = { w, h };
 
-	pendingServerUpdate = { true, 0, 0 };
+	pendingServerUpdate = { true, position[0], position[1]};
 }
 
-Organism::Organism(int initX, int initY, std::string initDNA){
+Organism::Organism(int w, int h, int initX, int initY, std::string initDNA){
 	//Unique ID for each organism, hopefully.
 	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
@@ -127,11 +129,12 @@ Organism::Organism(int initX, int initY, std::string initDNA){
 	//Set traits
 	this->traits = parse_traits(DNA);
 
-	//set org position to 0,0
+	//set org position to to specified point
 	position[0] = initX;
 	position[1] = initY;
+	map_dimensions = { w, h };
 
-	pendingServerUpdate = { true, 0, 0 };
+	pendingServerUpdate = { true, initX, initY };
 
 	//establish default surroundings?
 }
@@ -160,6 +163,10 @@ int Organism::getY(){
 
 std::string Organism::getDNA() {
 	return DNA;
+}
+
+Traits Organism::getTraits() {
+	return traits;
 }
 
 void Organism::receiveUpdate(ServerUpdate update){
@@ -218,32 +225,39 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 	float comparison_rating = 0;
 	std::array<int, 2> location_of_interest = {position[0], position[1]};
 	std::vector<std::pair<float, std::string>> toReturn;
-	std::cout << "\tOrganism noticed ";
-	if (sit.subject == "Org" && !surroundings.orgsNearby.empty()) {
-		std::cout << "another organism ";
+	if (sit.subject == "Org" && surroundings.orgsNearby.size()>1) {
 		for (int i = 0; i < surroundings.orgsNearby.size(); i++) {
 			location_of_interest = surroundings.orgsNearby[i].first;
 			OrgSense current_org = surroundings.orgsNearby[i].second;
 			if (sit.trait == "Mateable") {
 				//If mating requirements match
-				if ((current_org.mateable && sit.value == "yes") || (!current_org.mateable && sit.value == "no")) {
+				if (current_org.mateable && sit.value == "yes") {
 					comparison_rating += 1;
+					//std::cout << "Organism noticed another organism who is willing to mate." << std::endl;
+				}
+				else if (!current_org.mateable && sit.value == "no") {
+					comparison_rating += 1;
+					//std::cout << "Organism noticed another organism who is not willing to mate." << std::endl;
 				}
 			}
 			else if (sit.trait == "Proximity") {
 				float distance = sqrt(pow(location_of_interest[0],2) + pow(location_of_interest[1],2));
 				if (distance<1) {
-					if (sit.value == "near") { std::cout << "nearby." << std::endl; comparison_rating += 1; }
-					else if (sit.value == "far") { std::cout << "far away." << std::endl; comparison_rating += 0.5; }
+					if (sit.value == "near") { //std::cout << "Organism noticed another organism nearby." << std::endl; 
+						comparison_rating += 1; }
+					else if (sit.value == "far") { //std::cout << "Organism noticed another organism far away." << std::endl; 
+						comparison_rating += 0.5; }
 				}
 				else if (distance>=1) {
-					if (sit.value == "far") { std::cout << "far away." << std::endl; comparison_rating += 1; }
-					else if (sit.value == "near") { std::cout << "nearby." << std::endl; comparison_rating += 0.5; }
+					if (sit.value == "far") { //std::cout << "Organism noticed another organism far away." << std::endl; 
+						comparison_rating += 1; }
+					else if (sit.value == "near") { //std::cout << "Organism noticed another organism nearby." << std::endl; 
+						comparison_rating += 0.5; }
 				}
 				//ADD MIDDLE RANGE IF I DECIDE TO DO THAT
 			}
 			else if (sit.trait == "Color") {
-				std::cout << "of color " << current_org.color << "." << std::endl;
+				//std::cout << "Organism noticed another organism of color " << current_org.color << "." << std::endl;
 				if (current_org.color == std::stoi(sit.value)) {
 					comparison_rating += 1;
 				}
@@ -252,7 +266,7 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 				}
 			}
 			else if (sit.trait == "Size") {
-				std::cout << "of size " << current_org.size << "." << std::endl;
+				//std::cout << "Organism noticed another organism of size " << current_org.size << "." << std::endl;
 				if (current_org.size < traits.Size - 1 && sit.value == "smaller") {
 					comparison_rating += 1;
 				}
@@ -264,7 +278,7 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 				}
 			}
 			else if (sit.trait == "Newborn") {
-				std::cout << "who is newborn." << std::endl;
+				//std::cout << "Organism noticed another organism who is newborn." << std::endl;
 				if ((current_org.newborn && sit.value == "yes") || (!current_org.newborn && sit.value == "no")) {
 					comparison_rating += 1;
 				}
@@ -273,19 +287,22 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 		}
 	}
 	else if (sit.subject == "Food") {
-		std::cout << "some food ";
 		for (int i = 0; i < surroundings.foodNearby.size(); i++) {
 			location_of_interest = surroundings.foodNearby[i].first;
 			int current_amt = surroundings.foodNearby[i].second;
 			if (sit.trait == "Proximity") {
 				float distance = sqrt(pow(location_of_interest[0], 2) + pow(location_of_interest[1], 2));
 				if (distance<1) {
-					if (sit.value == "near") { std::cout << "nearby." << std::endl; comparison_rating += 1; }
-					else if (sit.value == "far") { std::cout << "far away." << std::endl; comparison_rating += 0.5; }
+					if (sit.value == "near") { //std::cout << "Organism noticed some food nearby." << std::endl; 
+						comparison_rating += 1; }
+					else if (sit.value == "far") { //std::cout << "Organism noticed some food far away." << std::endl; 
+						comparison_rating += 0.5; }
 				}
 				else if (distance >= 1) {
-					if (sit.value == "far") { std::cout << "far away." << std::endl; comparison_rating += 1; }
-					else if (sit.value == "near") { std::cout << "nearby." << std::endl; comparison_rating += 0.5; }
+					if (sit.value == "far") { //std::cout << "Organism noticed some food far away." << std::endl; 
+						comparison_rating += 1; }
+					else if (sit.value == "near") { //std::cout << "Organism noticed some food nearby." << std::endl; 
+						comparison_rating += 0.5; }
 				}
 				//ADD MIDDLE RANGE IF I DECIDE TO DO THAT
 			}
@@ -294,12 +311,15 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 				int foodValue = surroundings.foodNearby[i].second;
 				if (foodValue < traits.Health - 20 && sit.value == "smaller") {
 					comparison_rating += 1;
+					//std::cout << "Organism noticed a little food." << std::endl;
 				}
 				else if (foodValue >= traits.Health - 20 && foodValue <= traits.Health + 20 && sit.value == "similar") {
 					comparison_rating += 1;
+					//std::cout << "Organism noticed a moderate amount of food." << std::endl;
 				}
 				if (foodValue > traits.Health + 20 && sit.value == "larger") {
 					comparison_rating += 1;
+					//std::cout << "Organism noticed a lot of food." << std::endl;
 				}
 			}
 			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0])+","+std::to_string(location_of_interest[1])));
@@ -310,14 +330,17 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 
 void Organism::complete_action(std::string actionString) {
 	std::size_t split = actionString.find(" "); //Find delim, if exists
-	std::string actionSuffix = actionString.substr(split); //Split on delim
+	std::string actionSuffix = "";
+	if (split != std::string::npos) {
+		actionSuffix = actionString.substr(split); //Split on delim
+	}
 	std::string action = actionString.substr(0, actionString.size() - actionSuffix.size()); //Get action name
 	int deltaY, deltaX;
-	int targetID;
+	int targetID = -1;
 	if (!actionSuffix.empty()) {
 		actionSuffix = actionSuffix.substr(1); //strip whitespace at beginning
 		split = actionSuffix.find(",");
-		if (split != actionSuffix.size()) { //If suffix = coordinates
+		if (split != std::string::npos) { //If suffix = coordinates
 			std::string temp1 = actionSuffix.substr(split); //Split coords
 			temp1 = temp1.substr(1); //Strip comma
 			deltaY = stoi(temp1);
@@ -404,6 +427,10 @@ void Organism::eat(){
 }
 
 void Organism::attack(int targetID){
+	if (targetID == -1) {
+		std::cout << "Organism tried to attack, but nothing was there." << std::endl;
+		return;
+	}
 	std::cout << "Organism is attacking organism "<<targetID<<" ("<< 5 << ")" << std::endl;
 	pendingOrgUpdate.action = "Attack";
 	pendingOrgUpdate.targetID = targetID;
@@ -413,12 +440,21 @@ void Organism::attack(int targetID){
 void Organism::move(int deltaX, int deltaY) {
 	std::cout << "Organism is moved: deltaX="<<deltaX<<" and deltaY="<<deltaY<< std::endl;
 	pendingOrgUpdate.action = "Move";
-	pendingOrgUpdate.newX = this->position[0] + deltaX;
-	pendingOrgUpdate.newY = this->position[1] + deltaY;
+	if (this->position[0] != 0 && this->position[0] != map_dimensions[0] - 1) {
+		pendingOrgUpdate.newX = this->position[0] + deltaX;
+	}
+	if (this->position[1] != 0 && this->position[1] != map_dimensions[1] - 1) {
+		pendingOrgUpdate.newY = this->position[1] + deltaY;
+	}
 }
 
-void Organism::toggleMating() {
-	std::cout << "Organism toggled mating from "<<traits.Mateable<< " to "<< !traits.Mateable<< std::endl;
-	pendingOrgUpdate.action = "ToggleMating";
-	traits.Mateable = !traits.Mateable;
+void Organism::matingOn() {
+	std::cout << "Organism toggled mating on." << std::endl;
+	pendingOrgUpdate.action = "MatingOn";
+	traits.Mateable = true;
+}
+void Organism::matingOff() {
+	std::cout << "Organism toggled mating off." << std::endl;
+	pendingOrgUpdate.action = "MatingOff";
+	traits.Mateable = false;
 }

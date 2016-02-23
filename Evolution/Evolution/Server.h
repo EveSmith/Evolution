@@ -15,25 +15,29 @@ track and resolves conflicts.
 */
 class Server{
 public:
-	Server(int WIDTH, int HEIGHT, std::vector<Organism*>* OFFICIAL_ORG_LIST);
+	Server(int WIDTH, int HEIGHT, int INIT_SIZE);
 	~Server();
 
 	std::string printEnviron(bool grid=true);
+	std::string printOrgList();
 
-	void update(std::queue<OrgUpdate> &inbox);
+	void org_update();
+	void server_update();
 	void confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate);
 	Surroundings compileSurroundings(int ID, int x, int y);
 	Surroundings birthUpdate(int ID, int x, int y);
 
-	void addOrg(Organism* org);
+	void addOrg();
+	void addOrg(int initX, int initY, std::string initDNA);
 	void killOrg(int id);
 	
 
 private:
 	int width, height;
 	Environment* E;
-	std::vector<Organism*>* official_org_list;
-	std::map<int, Organism*> orgList;
+	std::queue<OrgUpdate> SERVER_INBOX;
+	std::map<int, Organism*> ORG_LIST;
+	std::map<int, std::array<int, 2>> mateable;
 };
 
 
