@@ -46,10 +46,11 @@ void Server::update(std::queue<OrgUpdate> &inbox){
 		else if (currUpdate.action == "ToggleMating") {
 
 		}
-
+		else if (currUpdate.action == "Move") {
+			E->moveOrg(currUpdate.senderID, currUpdate.oldX, currUpdate.oldY, currUpdate.newX, currUpdate.newY);
+		}
 		//confirmUpdate(currUpdate, servUpdate); //Remove and roll into orgs??
 		//Move Org from old position to new position
-		E->moveOrg(currUpdate.senderID, currUpdate.oldX, currUpdate.oldY, currUpdate.newX, currUpdate.newY);
 
 
 

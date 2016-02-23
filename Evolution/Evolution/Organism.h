@@ -47,7 +47,7 @@ private:
 
 	//Compares input observation to current surroundings, decides if situation is similar
 	std::vector<std::pair<float, std::string>> compare_surroundings(Situation obs); //Observation
-	void generate_action_function(std::string actionString);
+	void complete_action(std::string actionString);
 
 	std::array<int, 2> position;
 	ServerUpdate pendingServerUpdate;

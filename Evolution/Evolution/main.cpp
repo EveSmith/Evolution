@@ -62,7 +62,7 @@ int main(){
 
 	//If food far, move toward it,
 	//if food near, eat it,
-	Organism* newOrgPointer = new Organism(3,3,"000000111001111101111001001001");
+	Organism* newOrgPointer = new Organism();//3,3,"000000111001111101100111001001001111");
 	ORG_LIST.push_back(newOrgPointer);
 
 	server->addOrg(newOrgPointer);
