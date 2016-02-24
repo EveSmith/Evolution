@@ -99,6 +99,7 @@ void Server::server_update(){
 	for (auto partner1 : mateable) {
 		std::vector<int> alreadyMated;
 		for (auto partner2 : mateable) {
+			
 			if (partner1.second == partner2.second) { //neither org has already mated, neither are newborn, and positions are same...
 				//add new org at that location that combines their dna.
 			}
@@ -106,16 +107,6 @@ void Server::server_update(){
 	}
 }
 
-//Check validity of requested action, resolve conflicts
-void Server::confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate){
-	//Fix invalid movement
-	if (currUpdate.newX >= width){ currUpdate.newX = width - 1; }
-	if (currUpdate.newX < 0) { currUpdate.newX = 0; }
-	if (currUpdate.newY >= height){ currUpdate.newY = height - 1; }
-	if (currUpdate.newY < 0) { currUpdate.newY = 0; }
-	servUpdate.newX = currUpdate.newX;
-	servUpdate.newY = currUpdate.newY;
-}
 
 //CURRENTLY ONLY ALLOWS SENSING IN STRAIGHT LINE FROM CURRENT LOCATION
 //DOES NOT INCLUDE ANY CORNERS
@@ -200,6 +191,59 @@ Surroundings Server::compileSurroundings(int ID, int x, int y) {
 
 	return toReturn;
 }
+
+
+std::string Server::recombineDNA(std::string parent1, std::string parent2) {
+	std::string childDNA = "";
+	int mutation_chance = 10000;
+	int mutationType = rand() % 3;
+	if (parent1.size() <= parent2.size()) {
+		for (int i = 0; i < parent1.size(); i++) {
+			if (rand() % 2 == 0) { //MIGHT DECREASE DNA LENGTH OVER TIME
+				childDNA.append(std::to_string(parent1[i]));
+			}
+			else {
+				childDNA.append(std::to_string(parent2[i]));
+			}
+			//Mutation
+			if (rand()%mutation_chance == 0) {
+				if (mutationType == 0) { //Addition
+					childDNA.append(std::to_string(rand() % 2));
+				}
+				else if (mutationType == 1) { //Subtraction
+					childDNA.pop_back();
+				}
+				else { //Alteration
+					childDNA.replace(i, 1, std::to_string(rand() % 2));
+				}
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < parent2.size(); i++) {
+			if (rand() % 2 == 0) { //MIGHT DECREASE DNA LENGTH OVER TIME
+				childDNA.append(std::to_string(parent2[i]));
+			}
+			else {
+				childDNA.append(std::to_string(parent1[i]));
+			}
+			//Mutation
+			if (rand() < mutation_chance) {
+				if (mutationType == 0) { //Addition
+					childDNA.append(std::to_string(rand() % 2));
+				}
+				else if (mutationType == 1) { //Subtraction
+					childDNA.pop_back();
+				}
+				else { //Alteration
+					childDNA.replace(i, 1, std::to_string(rand() % 2));
+				}
+			}
+		}
+	}
+}
+
+
 
 void Server::addOrg(){
 	Organism* org = new Organism(width, height);

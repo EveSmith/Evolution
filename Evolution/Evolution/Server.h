@@ -23,9 +23,8 @@ public:
 
 	void org_update();
 	void server_update();
-	void confirmUpdate(OrgUpdate &currUpdate, ServerUpdate &servUpdate);
 	Surroundings compileSurroundings(int ID, int x, int y);
-	Surroundings birthUpdate(int ID, int x, int y);
+	std::string recombineDNA(std::string parent1, std::string parent2);
 
 	void addOrg();
 	void addOrg(int initX, int initY, std::string initDNA);
