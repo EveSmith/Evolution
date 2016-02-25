@@ -20,6 +20,7 @@ public:
 
 	std::string printEnviron(bool grid=true);
 	std::string printOrgList();
+	std::string printThoughts();
 
 	void org_update();
 	void server_update();
@@ -29,7 +30,6 @@ public:
 	void addOrg();
 	void addOrg(int initX, int initY, std::string initDNA);
 	void killOrg(int id);
-	
 
 private:
 	int width, height;
@@ -37,6 +37,7 @@ private:
 	std::queue<OrgUpdate> SERVER_INBOX;
 	std::map<int, Organism*> ORG_LIST;
 	std::map<int, std::array<int, 2>> mateable;
+	
 };
 
 

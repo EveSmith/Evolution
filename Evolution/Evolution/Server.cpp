@@ -38,6 +38,18 @@ std::string Server::printOrgList() {
 	return list;
 }
 
+std::string Server::printThoughts() {
+	std::string toReturn = "";
+	for (auto it : thoughtRelevance) {
+		toReturn.append("Situation: "+it.first.situation.subject + "," + it.first.situation.trait + "," + it.first.situation.value + "\n");
+		toReturn.append("Action: " + it.first.action + "\n");
+		toReturn.append("Rating: " + std::to_string(it.first.rating)+"\n");
+		toReturn.append("\tTimes thought: " + std::to_string(it.second)+"\n\n");
+	}
+	return toReturn;
+}
+
+
 
 void Server::org_update() {
 	for (auto it : ORG_LIST) {
@@ -96,15 +108,67 @@ void Server::server_update(){
 		ORG_LIST[currUpdate.senderID]->receiveUpdate(servUpdate);
 	}
 
-	for (auto partner1 : mateable) {
-		std::vector<int> alreadyMated;
-		for (auto partner2 : mateable) {
-			
-			if (partner1.second == partner2.second) { //neither org has already mated, neither are newborn, and positions are same...
-				//add new org at that location that combines their dna.
+	std::vector<int> alreadyMated;
+	//For every org with mating toggled on...
+	for (auto parent1 : mateable) {
+		//Look at every other org with mating toggled on...
+		for (auto parent2 : mateable) {
+			//Check if either has already mated
+			auto p1 = std::find(alreadyMated.begin(), alreadyMated.end(), parent1.first);
+			auto p2 = std::find(alreadyMated.begin(), alreadyMated.end(), parent2.first);
+			//If neither org has already mated, their positions are the same, and they aren't the same org...
+			if (p1 == alreadyMated.end() && p2 == alreadyMated.end() && parent1.second == parent2.second && parent1.first != parent2.first) {
+				//If neither parent is newborn...
+				if (!ORG_LIST[parent1.first]->getTraits().Newborn && !ORG_LIST[parent2.first]->getTraits().Newborn) {
+					//Create a new organism nearby that has their combined DNA.
+					int randtemp = rand() % 4;
+					std::array<int, 2> childpos = parent1.second;
+					if (randtemp == 0 && childpos[0] != width-1) { childpos[0]++; }
+					else if (randtemp == 1 && childpos[0] != 0) { childpos[0]--; }
+					else if (randtemp == 2 && childpos[1] != height-1) { childpos[1]++; }
+					else if (randtemp == 3 && childpos[1] != 0) { childpos[1]--; }
+					addOrg(childpos[0],childpos[1], recombineDNA(ORG_LIST[parent1.first]->getDNA(), ORG_LIST[parent2.first]->getDNA()));
+					alreadyMated.push_back(parent1.first);
+					alreadyMated.push_back(parent2.first);
+				}
 			}
 		}
 	}
+}
+
+
+std::string Server::recombineDNA(std::string parent1, std::string parent2) {
+	std::string childDNA = "";
+	int mutation_chance = 10000;
+	int mutationType = rand() % 3;
+	int i = 0;
+	try {
+		while(true) {
+			if (rand() % 2 == 0) { //MIGHT DECREASE DNA LENGTH OVER TIME
+				childDNA += parent1.at(i);
+			}
+			else {
+				childDNA += parent2.at(i);
+			}
+			//Mutation
+			if (rand() % mutation_chance == 0) {
+				if (mutationType == 0) { //Addition
+					childDNA.append(std::to_string(rand() % 2));
+				}
+				else if (mutationType == 1) { //Deletion
+					childDNA.pop_back();
+				}
+				else { //Alteration
+					childDNA.replace(i, 1, std::to_string(rand() % 2));
+				}
+			}
+			i++;
+		}
+	}
+	catch(std::out_of_range e){
+
+	}
+	return childDNA;
 }
 
 
@@ -193,58 +257,6 @@ Surroundings Server::compileSurroundings(int ID, int x, int y) {
 }
 
 
-std::string Server::recombineDNA(std::string parent1, std::string parent2) {
-	std::string childDNA = "";
-	int mutation_chance = 10000;
-	int mutationType = rand() % 3;
-	if (parent1.size() <= parent2.size()) {
-		for (int i = 0; i < parent1.size(); i++) {
-			if (rand() % 2 == 0) { //MIGHT DECREASE DNA LENGTH OVER TIME
-				childDNA.append(std::to_string(parent1[i]));
-			}
-			else {
-				childDNA.append(std::to_string(parent2[i]));
-			}
-			//Mutation
-			if (rand()%mutation_chance == 0) {
-				if (mutationType == 0) { //Addition
-					childDNA.append(std::to_string(rand() % 2));
-				}
-				else if (mutationType == 1) { //Subtraction
-					childDNA.pop_back();
-				}
-				else { //Alteration
-					childDNA.replace(i, 1, std::to_string(rand() % 2));
-				}
-			}
-		}
-	}
-	else {
-		for (int i = 0; i < parent2.size(); i++) {
-			if (rand() % 2 == 0) { //MIGHT DECREASE DNA LENGTH OVER TIME
-				childDNA.append(std::to_string(parent2[i]));
-			}
-			else {
-				childDNA.append(std::to_string(parent1[i]));
-			}
-			//Mutation
-			if (rand() < mutation_chance) {
-				if (mutationType == 0) { //Addition
-					childDNA.append(std::to_string(rand() % 2));
-				}
-				else if (mutationType == 1) { //Subtraction
-					childDNA.pop_back();
-				}
-				else { //Alteration
-					childDNA.replace(i, 1, std::to_string(rand() % 2));
-				}
-			}
-		}
-	}
-}
-
-
-
 void Server::addOrg(){
 	Organism* org = new Organism(width, height);
 	ORG_LIST[org->getID()] = org;
@@ -261,6 +273,7 @@ void Server::addOrg(int initX, int initY, std::string initDNA) {
 
 
 void Server::killOrg(int id){
+	mateable.erase(id);
 	E->remOrg(id);
 	delete ORG_LIST[id];
 	ORG_LIST.erase(id);

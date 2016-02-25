@@ -32,7 +32,7 @@ public:
 	void healing(int amount);
 
 	//Send update to the server
-	void sendUpdate(std::queue<OrgUpdate> &inbox);
+	void sendUpdate(std::queue<OrgUpdate>& inbox);
 	//Creates the update object, but does not send it
 	void updateSelf();
 

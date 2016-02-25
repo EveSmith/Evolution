@@ -33,7 +33,7 @@ int main(){
 
 	int WIDTH = 5;
 	int HEIGHT = 5;
-	int INIT_SIZE = 0;
+	int INIT_SIZE = 5;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
 
@@ -41,11 +41,12 @@ int main(){
 	//	spawnNewOrg(server, WIDTH, HEIGHT);
 	//}
 
-	std::string dna1 = "000000" + generateIntel(7, 1, 0, 0, 7); //If food nearby, ignore
-	std::string dna2 = "000000" + generateIntel(0, 1, 0, 3, 7); //If org nearby, attack
-	std::string dna3 = "000000000";
-	server->addOrg(1, 1, dna1); 
-	server->addOrg(1, 1, dna2);
+
+	std::string dna1 = "000000" + generateIntel(7, 1, 0, 6, 7); //If food nearby, toggle mating on
+	std::string dna2 = "000000" + generateIntel(7, 1, 0, 6, 7); //If org nearby, toggle mating on
+	
+	//server->addOrg(3, 3, dna1); 
+	//server->addOrg(3, 3, dna2);
 
 	
 
@@ -55,8 +56,7 @@ int main(){
 		server->org_update();
 		server->server_update();
 
-		std::cout << server->printOrgList();
-		std::cout << server->printEnviron();
+		std::cout << server->printThoughts() << std::endl;
 
 		std::cout << "Enter 'end' to end. Enter anything else to continue...\n";
 		std::cin >> input;

@@ -25,7 +25,7 @@ int bin_to_int(std::string binary) {
 std::vector<Intel> dna_to_knowledge(std::string dna) {
 	std::vector<Intel> knowledge;
 	std::string knowledge_dna = dna.substr(6);
-	for (int i = 0; i < dna.size() / (INTEL_LENGTH*GENE_LENGTH); i++) {
+	for (int i = 0; i < knowledge_dna.size() / (INTEL_LENGTH*GENE_LENGTH); i++) {
 		Situation currentSit;
 		Intel currentIntel;
 		std::string intel_slice = knowledge_dna.substr(i*INTEL_LENGTH, INTEL_LENGTH*GENE_LENGTH);
@@ -198,7 +198,7 @@ void Organism::healing(int amount) {
 }
 
 //Send update to server
-void Organism::sendUpdate(std::queue<OrgUpdate> &inbox){
+void Organism::sendUpdate(std::queue<OrgUpdate>& inbox){
 	inbox.push(pendingOrgUpdate);
 	pendingOrgUpdate.action = "Idle";
 }
@@ -206,7 +206,7 @@ void Organism::sendUpdate(std::queue<OrgUpdate> &inbox){
 
 void Organism::updateSelf(){
 	pendingOrgUpdate.senderID = ID;
-	traits.Health -= 4;
+	traits.Health -= traits.Size+5;
 
 	if (traits.Health <= 0) {
 		pendingOrgUpdate.alive = false;
@@ -214,10 +214,16 @@ void Organism::updateSelf(){
 
 	pendingOrgUpdate.oldX = position[0];
 	pendingOrgUpdate.oldY = position[1];
+	pendingOrgUpdate.newX = position[0];
+	pendingOrgUpdate.newY = position[1];
 
-	//ADD NEWBORN STUFF
 	reason();
 
+	traits.Age++;
+	//NEWBORN STUFF ABOUT AGE
+	if (traits.Age >= 5) {
+		traits.Newborn = false;
+	}
 }
 
 //Returns comparison rating, as well as an optional string to append to the action (specify locations, org IDs, etc.)
@@ -366,10 +372,10 @@ void Organism::complete_action(std::string actionString) {
 		move(-deltaX, -deltaY);
 	}
 	else if (action == "MatingOn") {
-		toggleMating();
+		matingOn();
 	}
 	else if (action == "MatingOff") {
-		toggleMating();
+		matingOff();
 	}
 
 }
@@ -390,6 +396,8 @@ void Organism::reason(){
 				action_ratings[full_action] = 0;
 			}
 			action_ratings[full_action] += current_location_action_ratings[j].first;
+
+			server->thoughtRelevance[knowledge[i]]++;
 		}
 	}
 	//Find action with highest rating

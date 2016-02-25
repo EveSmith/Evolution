@@ -56,6 +56,7 @@ struct Traits {
 	int Size;
 	bool Mateable;
 	bool Newborn;
+	int Age = 0;
 };
 
 
