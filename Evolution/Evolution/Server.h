@@ -20,7 +20,6 @@ public:
 
 	std::string printEnviron(bool grid=true);
 	std::string printOrgList();
-	std::string printThoughts();
 
 	void org_update();
 	void server_update();

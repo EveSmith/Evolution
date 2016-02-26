@@ -38,6 +38,9 @@ struct Surroundings {
 
 //Situation
 struct Situation {
+	bool operator==(const Situation& a) const {
+		return (a.subject == this->subject && a.trait == this->trait && a.value == this->value);
+	}
 	std::string subject;
 	std::string trait;
 	std::string value;
@@ -45,6 +48,14 @@ struct Situation {
 
 //Individual units of knowledge: associations between observations and actions
 struct Intel {
+	bool operator==(const Intel& a) const {
+		if (a.action == this->action && a.rating == this->rating) {
+			if (a.situation == this->situation) {
+				return true;
+			}
+		}
+		return false;
+	}
 	Situation situation;
 	std::string action;
 	int rating;

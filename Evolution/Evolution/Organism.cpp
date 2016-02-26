@@ -1,4 +1,5 @@
 #include "Organism.h"
+#include "DataCompiler.h"
 #include <iostream>
 #include <map>
 #include <stdlib.h>
@@ -102,7 +103,7 @@ Organism::Organism(int w, int h){
 
 	//Generate some binary DNA
 	DNA = "";
-	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*500)+6; i++){
+	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*1)+6; i++){
 		DNA.append(std::to_string(rand() % 2));
 	}
 	this->knowledge = dna_to_knowledge(DNA);
@@ -396,8 +397,14 @@ void Organism::reason(){
 				action_ratings[full_action] = 0;
 			}
 			action_ratings[full_action] += current_location_action_ratings[j].first;
-
-			server->thoughtRelevance[knowledge[i]]++;
+		}
+		auto it = std::find(THOUGHTS.begin(), THOUGHTS.end(), knowledge[i]);
+		if (it != THOUGHTS.end()) {
+			THOUGHT_RELEVANCE[it - THOUGHTS.begin()] += 1;
+		}
+		else {
+			THOUGHTS.push_back(knowledge[i]);
+			THOUGHT_RELEVANCE.push_back(1);
 		}
 	}
 	//Find action with highest rating

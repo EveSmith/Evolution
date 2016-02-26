@@ -38,26 +38,12 @@ std::string Server::printOrgList() {
 	return list;
 }
 
-std::string Server::printThoughts() {
-	std::string toReturn = "";
-	for (auto it : thoughtRelevance) {
-		toReturn.append("Situation: "+it.first.situation.subject + "," + it.first.situation.trait + "," + it.first.situation.value + "\n");
-		toReturn.append("Action: " + it.first.action + "\n");
-		toReturn.append("Rating: " + std::to_string(it.first.rating)+"\n");
-		toReturn.append("\tTimes thought: " + std::to_string(it.second)+"\n\n");
-	}
-	return toReturn;
-}
-
-
-
 void Server::org_update() {
 	for (auto it : ORG_LIST) {
 		it.second->updateSelf();
 		it.second->sendUpdate(SERVER_INBOX);
 	}
 }
-
 
 void Server::server_update(){
 	OrgUpdate currUpdate;

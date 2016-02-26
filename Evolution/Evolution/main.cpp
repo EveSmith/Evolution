@@ -4,6 +4,9 @@
 #include <iostream>
 #include <time.h>
 #include "Server.h"
+//#include "DataCompiler.h"
+
+std::string printThoughts();
 
 std::string int_to_bin(int i) {
 	std::string bin = "";
@@ -28,12 +31,12 @@ std::string generateIntel(int subject, int trait, int value, int action, int rat
 
 
 int main(){
-	int SEED = 0;//time(NULL);
+	int SEED = time(NULL);
 	srand(SEED);
 
 	int WIDTH = 5;
 	int HEIGHT = 5;
-	int INIT_SIZE = 5;
+	int INIT_SIZE = 0;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
 
@@ -44,23 +47,28 @@ int main(){
 
 	std::string dna1 = "000000" + generateIntel(7, 1, 0, 6, 7); //If food nearby, toggle mating on
 	std::string dna2 = "000000" + generateIntel(7, 1, 0, 6, 7); //If org nearby, toggle mating on
-	
-	//server->addOrg(3, 3, dna1); 
-	//server->addOrg(3, 3, dna2);
+	std::string dna3 = "000000" + generateIntel(7, 7, 0, 5, 7);
+	server->addOrg(3, 3, dna1); 
+	server->addOrg(3, 3, dna2);
 
 	
 
 	std::string input;
-	while (input != "end"){
+	//while (input != "end"){
+	for (int i = 0; i < 100; i++){
 		//TO DO: CHANGE TO "SIMULTANEOUS" BEHAVIOR
 		server->org_update();
 		server->server_update();
 
-		std::cout << server->printThoughts() << std::endl;
-
+		std::cout << server->printOrgList() << std::endl;
+		std::cout << server->printEnviron() << std::endl;
 		std::cout << "Enter 'end' to end. Enter anything else to continue...\n";
 		std::cin >> input;
+
 	}
+	std::cout << printThoughts() << std::endl;
+
+	
 
 	return 0;
 }

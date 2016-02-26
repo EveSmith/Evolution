@@ -1,22 +1,4 @@
 ﻿  main.cpp
-  Server.cpp
-c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(197): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(209): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(222): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(235): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\server.cpp(248): warning C4018: '<': signed/unsigned mismatch
-  Organism.cpp
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(28): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(204): error C2027: use of undefined type 'Server'
-  c:\users\evie\desktop\evolution\evolution\evolution\organism.h(10): note: see declaration of 'Server'
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(204): error C2227: left of '->deliverUpdate' must point to class/struct/union/generic type
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(237): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(252): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(298): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(302): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(388): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(392): warning C4018: '<': signed/unsigned mismatch
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(402): error C2027: use of undefined type 'Server'
-  c:\users\evie\desktop\evolution\evolution\evolution\organism.h(10): note: see declaration of 'Server'
-c:\users\evie\desktop\evolution\evolution\evolution\organism.cpp(402): error C2227: left of '->thoughtRelevance' must point to class/struct/union/generic type
-  Generating Code...
+c:\users\eve\desktop\evolution\evolution\evolution\main.cpp(34): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+  Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.exe
+  Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.pdb (Partial PDB)
