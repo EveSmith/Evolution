@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 Cell::Cell(){
-	resources["Food"] = rand() % 100;
+	food = rand() % 100;
 }
 
 
@@ -63,26 +63,14 @@ void Cell::removeOrg(int id){
 
 
 //Returns this cell's resource map
-std::map<std::string,int> Cell::getResources(){
-	return resources;
-}
-
-//Returns the value of the specified resource
-int Cell::getResource(std::string resource){
-	if (resources.count(resource) > 0){
-		return resources[resource];
-	}
-	else{
-		throw std::invalid_argument("Resource " + resource + " does not exist");
-	}
+int Cell::getFood(){
+	return food;
 }
 
 //Changes amount of resource by the specified delta
-void Cell::modifyResources(std::string resource, int delta){
-	if (resources.count(resource) > 0){
-		resources[resource] += delta;
-	}
-	else{
-		throw std::invalid_argument("Resource " + resource + " does not exist");
+void Cell::modifyFood(int delta){
+	food += delta;
+	if (food < 0) {
+		food = 0;
 	}
 }

@@ -21,14 +21,14 @@ public:
 	std::string printEnviron(bool grid=true);
 	std::string printOrgList();
 
-	void org_update();
+	bool org_update();
 	void server_update();
 	Surroundings compileSurroundings(int ID, int x, int y);
 	std::string recombineDNA(std::string parent1, std::string parent2);
 
 	void addOrg();
 	void addOrg(int initX, int initY, std::string initDNA);
-	void killOrg(int id);
+	void killOrg(int x, int y, int id, int size);
 
 private:
 	int width, height;

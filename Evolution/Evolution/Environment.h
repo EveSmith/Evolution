@@ -24,10 +24,8 @@ public:
 	std::vector<int> getOrgs(int x, int y);
 	std::vector<int> getOrgs(int index);
 
-	std::map<std::string, int> getResources(int x, int y);
-	int getResources(int x, int y, std::string resource);
-	void changeResources(int x, int y, std::map<std::string, int> deltaMap);
-	void changeResources(int x, int y, std::string resource, int delta);
+	int getFood(int x, int y);
+	void changeFood(int x, int y, int delta);
 
 private:
 	int width;

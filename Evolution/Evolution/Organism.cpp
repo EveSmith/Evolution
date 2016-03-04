@@ -431,29 +431,29 @@ void Organism::reason(){
 }
 
 void Organism::idle() {
-	std::cout << "Organism is idling" << std::endl;
+	//std::cout << "Organism is idling" << std::endl;
 	pendingOrgUpdate.action = "Idle";
 }
 
 void Organism::eat(){
-	std::cout << "Organism is eating ("<< 5 << ")" << std::endl;
+	//std::cout << "Organism is eating ("<< 5 << ")" << std::endl;
 	pendingOrgUpdate.action = "Eat";
 	pendingOrgUpdate.amount = 5;
 }
 
 void Organism::attack(int targetID){
 	if (targetID == -1) {
-		std::cout << "Organism tried to attack, but nothing was there." << std::endl;
+		//std::cout << "Organism tried to attack, but nothing was there." << std::endl;
 		return;
 	}
-	std::cout << "Organism is attacking organism "<<targetID<<" ("<< 5 << ")" << std::endl;
+	//std::cout << "Organism is attacking organism "<<targetID<<" ("<< 5 << ")" << std::endl;
 	pendingOrgUpdate.action = "Attack";
 	pendingOrgUpdate.targetID = targetID;
 	pendingOrgUpdate.amount = traits.Size*2;
 }
 
 void Organism::move(int deltaX, int deltaY) {
-	std::cout << "Organism is moved: deltaX="<<deltaX<<" and deltaY="<<deltaY<< std::endl;
+	//std::cout << "Organism is moved: deltaX="<<deltaX<<" and deltaY="<<deltaY<< std::endl;
 	pendingOrgUpdate.action = "Move";
 	if (this->position[0] != 0 && this->position[0] != map_dimensions[0] - 1) {
 		pendingOrgUpdate.newX = this->position[0] + deltaX;
@@ -464,12 +464,12 @@ void Organism::move(int deltaX, int deltaY) {
 }
 
 void Organism::matingOn() {
-	std::cout << "Organism toggled mating on." << std::endl;
+	//std::cout << "Organism toggled mating on." << std::endl;
 	pendingOrgUpdate.action = "MatingOn";
 	traits.Mateable = true;
 }
 void Organism::matingOff() {
-	std::cout << "Organism toggled mating off." << std::endl;
+	//std::cout << "Organism toggled mating off." << std::endl;
 	pendingOrgUpdate.action = "MatingOff";
 	traits.Mateable = false;
 }

@@ -1,4 +1,4 @@
 ﻿  main.cpp
-c:\users\eve\desktop\evolution\evolution\evolution\main.cpp(34): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+c:\users\eve\desktop\evolution\evolution\evolution\main.cpp(41): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
   Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.exe
   Evolution.vcxproj -> C:\Users\Eve\Desktop\Evolution\Evolution\Debug\Evolution.pdb (Partial PDB)

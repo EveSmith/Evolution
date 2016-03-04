@@ -20,15 +20,13 @@ public:
 
 
 	std::map<std::string, int> getResources();
-	int getResource(std::string resource);
-	void modifyResources(std::string resource, int delta);
+	int getFood();
+	void modifyFood(int delta);
 
 
 private:
 	std::vector<int> orgsPresent;
-
-	//Mapping of resource names to amount of that resource
-	std::map<std::string, int> resources = { { "Food", 0 } };
+	int food;
 
 };
 

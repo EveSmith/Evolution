@@ -38,11 +38,15 @@ std::string Server::printOrgList() {
 	return list;
 }
 
-void Server::org_update() {
+bool Server::org_update() {
+	if (ORG_LIST.size() == 0) {
+		return false;
+	}
 	for (auto it : ORG_LIST) {
 		it.second->updateSelf();
 		it.second->sendUpdate(SERVER_INBOX);
 	}
+	return true;
 }
 
 void Server::server_update(){
@@ -54,13 +58,13 @@ void Server::server_update(){
 		currUpdate = SERVER_INBOX.front();
 		//If Org is marked for death, kill it
 		if (!currUpdate.alive){
-			killOrg(currUpdate.senderID);
+			killOrg(currUpdate.oldX, currUpdate.oldY, currUpdate.senderID, ORG_LIST[currUpdate.senderID]->getTraits().Size);
 			SERVER_INBOX.pop();
 			continue;
 		}
 
 		else if (currUpdate.action == "Eat") {
-			E->changeResources(currUpdate.oldX, currUpdate.oldY, "Food", currUpdate.amount);
+			E->changeFood(currUpdate.oldX, currUpdate.oldY, currUpdate.amount);
 			ORG_LIST[currUpdate.senderID]->healing(currUpdate.amount);
 		}
 		else if (currUpdate.action == "Attack") {
@@ -124,6 +128,7 @@ void Server::server_update(){
 
 
 std::string Server::recombineDNA(std::string parent1, std::string parent2) {
+	std::cout << "Mating is happening!!!" << std::endl;
 	std::string childDNA = "";
 	int mutation_chance = 10000;
 	int mutationType = rand() % 3;
@@ -166,11 +171,11 @@ Surroundings Server::compileSurroundings(int ID, int x, int y) {
 	std::array<int, 2> positionTemp = { 0,0 };
 
 	//Compile surrounding food amounts
-	toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x, y, "Food")));
-	if (x != width - 1) { positionTemp = { 1,0 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x + 1, y, "Food"))); }
-	if(y!=height-1){ positionTemp = { 0,1 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x, y+1, "Food"))); }
-	if(x!=0) { positionTemp = { -1,0 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x-1, y, "Food"))); }
-	if(y!=0) { positionTemp = { 0,-1 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getResources(x, y-1, "Food"))); }
+	toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getFood(x, y)));
+	if (x != width - 1) { positionTemp = { 1,0 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getFood(x + 1, y))); }
+	if(y!=height-1){ positionTemp = { 0,1 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getFood(x, y+1))); }
+	if(x!=0) { positionTemp = { -1,0 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getFood(x-1, y))); }
+	if(y!=0) { positionTemp = { 0,-1 }; toReturn.foodNearby.push_back(std::make_pair(positionTemp, E->getFood(x, y-1))); }
 
 	//Compile surrounding organisms
 	std::vector<int> currentOrgList = E->getOrgs(x, y);
@@ -258,9 +263,10 @@ void Server::addOrg(int initX, int initY, std::string initDNA) {
 }
 
 
-void Server::killOrg(int id){
+void Server::killOrg(int x, int y, int id, int size){
 	mateable.erase(id);
 	E->remOrg(id);
+	E->changeFood(x, y, size);
 	delete ORG_LIST[id];
 	ORG_LIST.erase(id);
 }

@@ -113,26 +113,12 @@ std::vector<int> Environment::getOrgs(int index) {
 	return matrix[index]->getOrgs();
 }
 
-//Gets complete resource info for a cell
-std::map<std::string, int> Environment::getResources(int x, int y){
-	return matrix[y*width + x]->getResources();
-}
-
 //Gets specific resource amount for a cell
-int Environment::getResources(int x, int y, std::string resource){
-	return matrix[y*width + x]->getResource(resource);
+int Environment::getFood(int x, int y){
+	return matrix[y*width + x]->getFood();
 }
 
 //Changes all of the resources in a cell by the amounts specified in deltaMap
-void Environment::changeResources(int x, int y, std::map<std::string, int> deltaMap){
-	typedef std::map<std::string, int>::iterator iter_map;
-	for (iter_map iterator = deltaMap.begin(); iterator != deltaMap.end(); ++iterator){
-		matrix[y*width + x]->modifyResources(iterator->first, iterator->second);
-	}
-		
-}
-
-//Changes specific resource in a cell by the amount specified in delta
-void Environment::changeResources(int x, int y, std::string resource, int delta){
-	matrix[y*width + x]->modifyResources(resource, delta);
+void Environment::changeFood(int x, int y, int delta){
+	matrix[y*width + x]->modifyFood(delta);
 }
