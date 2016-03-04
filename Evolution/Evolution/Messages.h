@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <array>
 
 
 //Type sent from organism to server to request some action.
@@ -22,7 +23,7 @@ struct OrgUpdate{
 
 //Organism's perception of other organisms
 struct OrgSense{
-	int ID;
+	int ID = -1;
 	bool mateable;
 	std::array<int, 2> position; //relative position from self
 	int color;

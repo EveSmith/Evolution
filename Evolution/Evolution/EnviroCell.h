@@ -22,11 +22,13 @@ public:
 	std::map<std::string, int> getResources();
 	int getFood();
 	void modifyFood(int delta);
+	void randomReplenish();
 
 
 private:
 	std::vector<int> orgsPresent;
 	int food;
+	int replenishRate;
 
 };
 

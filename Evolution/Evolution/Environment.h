@@ -26,6 +26,7 @@ public:
 
 	int getFood(int x, int y);
 	void changeFood(int x, int y, int delta);
+	void randomReplenish();
 
 private:
 	int width;

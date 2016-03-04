@@ -20,6 +20,7 @@ public:
 
 	std::string printEnviron(bool grid=true);
 	std::string printOrgList();
+	std::pair<std::vector<Intel>,std::vector<int>> getThoughtRelevancies();
 
 	bool org_update();
 	void server_update();

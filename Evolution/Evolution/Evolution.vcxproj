@@ -110,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataCompiler.cpp" />
     <ClCompile Include="EnviroCell.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="main.cpp" />

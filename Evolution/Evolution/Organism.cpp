@@ -1,5 +1,4 @@
 #include "Organism.h"
-#include "DataCompiler.h"
 #include <iostream>
 #include <map>
 #include <stdlib.h>
@@ -261,7 +260,6 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 					else if (sit.value == "near") { //std::cout << "Organism noticed another organism nearby." << std::endl; 
 						comparison_rating += 0.5; }
 				}
-				//ADD MIDDLE RANGE IF I DECIDE TO DO THAT
 			}
 			else if (sit.trait == "Color") {
 				//std::cout << "Organism noticed another organism of color " << current_org.color << "." << std::endl;
@@ -290,14 +288,17 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 					comparison_rating += 1;
 				}
 			}
-			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0]) + "," + std::to_string(location_of_interest[1])));
+			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0]) + "," + std::to_string(location_of_interest[1]) + ";" + std::to_string(current_org.ID)));
 		}
 	}
 	else if (sit.subject == "Food") {
 		for (int i = 0; i < surroundings.foodNearby.size(); i++) {
 			location_of_interest = surroundings.foodNearby[i].first;
 			int current_amt = surroundings.foodNearby[i].second;
-			if (sit.trait == "Proximity") {
+			if (sit.trait == "Mateable") {
+				//Food is never matable.
+			}
+			else if (sit.trait == "Proximity") {
 				float distance = sqrt(pow(location_of_interest[0], 2) + pow(location_of_interest[1], 2));
 				if (distance<1) {
 					if (sit.value == "near") { //std::cout << "Organism noticed some food nearby." << std::endl; 
@@ -312,6 +313,11 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 						comparison_rating += 0.5; }
 				}
 				//ADD MIDDLE RANGE IF I DECIDE TO DO THAT
+			}
+			else if (sit.trait == "Color") {
+				if (rand() % 2 == 0) {
+					comparison_rating += 1;
+				}
 			}
 			else if (sit.trait == "Size") {
 				//Measures amount of food relative to how much health the org has
@@ -329,7 +335,10 @@ std::vector<std::pair<float, std::string>> Organism::compare_surroundings(Situat
 					//std::cout << "Organism noticed a lot of food." << std::endl;
 				}
 			}
-			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0])+","+std::to_string(location_of_interest[1])));
+			else if (sit.trait == "Newborn") {
+				//Food is never newborn
+			}
+			toReturn.push_back(std::make_pair(comparison_rating, std::to_string(location_of_interest[0]) + "," + std::to_string(location_of_interest[1]) + ";-1"));
 		}
 	}
 	return toReturn;
@@ -346,16 +355,14 @@ void Organism::complete_action(std::string actionString) {
 	int targetID = -1;
 	if (!actionSuffix.empty()) {
 		actionSuffix = actionSuffix.substr(1); //strip whitespace at beginning
-		split = actionSuffix.find(",");
-		if (split != std::string::npos) { //If suffix = coordinates
-			std::string temp1 = actionSuffix.substr(split); //Split coords
-			temp1 = temp1.substr(1); //Strip comma
-			deltaY = stoi(temp1);
-			deltaX = stoi(actionSuffix.substr(0, actionSuffix.size() - temp1.size()));
-		}
-		else {
-			targetID = stoi(actionSuffix);
-		}
+		split = actionSuffix.find(";"); //Split location and targetID
+		std::string targetIDstring = actionSuffix.substr(split+1); //Split coords "id"
+		std::string locationString = actionSuffix.substr(0, actionSuffix.size() - targetIDstring.size()+1); //Get location coords "x,y"
+		targetID = stoi(targetIDstring);
+		split = locationString.find(","); //Split location
+		std::string ystring = locationString.substr(split+1);
+		deltaY = stoi(ystring);
+		deltaX = stoi(actionSuffix.substr(0, actionSuffix.size() - ystring.size()+1));
 	}
 	if (action == "Idle") {
 		idle();
@@ -385,7 +392,7 @@ void Organism::reason(){
 	std::map<std::string, float> action_ratings;
 	//Compare surroundings for every piece of knowledge, append action suffixes, factor in rating
 	for (int i = 0; i < knowledge.size(); i++) {
-		//Assess the relevance of each thought
+		//Assess the relevance of each thought <relevance, additional info>
 		std::vector<std::pair<float, std::string>> current_location_action_ratings = compare_surroundings(knowledge[i].situation);
 		//For every "thought-relevance"-thought pair...
 		for (int j = 0; j < current_location_action_ratings.size(); j++) {
@@ -398,13 +405,14 @@ void Organism::reason(){
 			}
 			action_ratings[full_action] += current_location_action_ratings[j].first;
 		}
-		auto it = std::find(THOUGHTS.begin(), THOUGHTS.end(), knowledge[i]);
-		if (it != THOUGHTS.end()) {
-			THOUGHT_RELEVANCE[it - THOUGHTS.begin()] += 1;
+		//Store relevant thoughts
+		auto it = std::find(lastRelevantThoughts.begin(), lastRelevantThoughts.end(), knowledge[i]);
+		if (it != lastRelevantThoughts.end()) {
+			lastThoughtRelevancies[it - lastRelevantThoughts.begin()] += 1;
 		}
 		else {
-			THOUGHTS.push_back(knowledge[i]);
-			THOUGHT_RELEVANCE.push_back(1);
+			lastRelevantThoughts.push_back(knowledge[i]);
+			lastThoughtRelevancies.push_back(1);
 		}
 	}
 	//Find action with highest rating
@@ -443,13 +451,13 @@ void Organism::eat(){
 
 void Organism::attack(int targetID){
 	if (targetID == -1) {
-		//std::cout << "Organism tried to attack, but nothing was there." << std::endl;
+		std::cout << "Organism tried to attack, but nothing was there." << std::endl;
 		return;
 	}
-	//std::cout << "Organism is attacking organism "<<targetID<<" ("<< 5 << ")" << std::endl;
 	pendingOrgUpdate.action = "Attack";
 	pendingOrgUpdate.targetID = targetID;
-	pendingOrgUpdate.amount = traits.Size*2;
+	pendingOrgUpdate.amount = (traits.Size*2)+5;
+	std::cout << "Organism is attacking organism " << targetID << " (" << pendingOrgUpdate.amount << ")" << std::endl;
 }
 
 void Organism::move(int deltaX, int deltaY) {

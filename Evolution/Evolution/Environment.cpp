@@ -122,3 +122,9 @@ int Environment::getFood(int x, int y){
 void Environment::changeFood(int x, int y, int delta){
 	matrix[y*width + x]->modifyFood(delta);
 }
+
+void Environment::randomReplenish() {
+	for (int i = 0; i < matrix.size(); i++) {
+		matrix[i]->randomReplenish();
+	}
+}

@@ -4,9 +4,7 @@
 #include <iostream>
 #include <time.h>
 #include "Server.h"
-//#include "DataCompiler.h"
-
-std::string printThoughts();
+#include "DataCompiler.h"
 
 std::string int_to_bin(int i) {
 	std::string bin = "";
@@ -41,24 +39,27 @@ int main(){
 	int SEED = time(NULL);
 	srand(SEED);
 
-	int WIDTH = 100;
-	int HEIGHT = 100;
-	int INIT_SIZE = 100;
-	int ITERATIONS = 10000;
-	int GENOME_LENGTH = 100000;
+	int WIDTH = 5;
+	int HEIGHT = 5;
+	int INIT_SIZE = 0;
+	int ITERATIONS = 10;
+	int GENOME_LENGTH = 10;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
+	Data_Compiler* dataCompiler = new Data_Compiler(server);
 
 	//for (int i = 0; i < INIT_SIZE; i++){
 	//	spawnNewOrg(server, WIDTH, HEIGHT);
 	//}
 
 
-	std::string dna1 = "000000" + generateIntel(7, 1, 0, 6, 7); //If food nearby, toggle mating on
-	std::string dna2 = "000000" + generateIntel(7, 1, 0, 6, 7); //If org nearby, toggle mating on
-	std::string dna3 = "000000" + generateIntel(7, 7, 0, 5, 7);
-	//server->addOrg(3, 3, dna1); 
-	//server->addOrg(3, 3, dna2);
+	std::string dna1 = "000100" + generateIntel(0, 1, 7, 5, 7);
+	std::string dna2 = "000100" + generateIntel(0, 1, 0, 0, 7);
+	server->addOrg(3, 3, dna1);
+	server->addOrg(2, 3, dna2);
+	server->addOrg(3, 1, dna2);
+	server->addOrg(0, 2, dna2);
+	server->addOrg(3, 3, dna2);
 
 	
 
@@ -73,16 +74,19 @@ int main(){
 			break;
 		}
 		server->server_update();
-		
-		//stepByStep(server, input);
+		dataCompiler->updateInfo();
+
+		stepByStep(server, input);
 
 	}
-	std::cout << printThoughts() << std::endl;
+	std::cout << dataCompiler->printThoughts() << std::endl;
 	if (iterationOfDeath > 0) {
 		std::cout << std::endl;
 		std::cout << "All life has died out." << std::endl;
 		std::cout << "Iterations survived: " << iterationOfDeath << std::endl;
 	}
+	dataCompiler->exportThoughts();
+	std::cout << "Exported thought info to 'thoughts.csv'." << std::endl;
 	std::cout << "Press any key to close...";
 	std::cin >> input;
 	

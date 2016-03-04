@@ -38,6 +38,23 @@ std::string Server::printOrgList() {
 	return list;
 }
 
+std::pair<std::vector<Intel>, std::vector<int>> Server::getThoughtRelevancies() {
+	std::pair<std::vector<Intel>, std::vector<int>> toReturn;
+	for (auto org : ORG_LIST) {
+		for (int i = 0; i < org.second->lastRelevantThoughts.size(); i++) {
+			auto it = std::find(toReturn.first.begin(), toReturn.first.end(), org.second->lastRelevantThoughts[i]);
+			if (it != toReturn.first.end()) {
+				toReturn.second[it - toReturn.first.begin()] += org.second->lastThoughtRelevancies[i];
+			}
+			else {
+				toReturn.first.push_back(org.second->lastRelevantThoughts[i]);
+				toReturn.second.push_back(org.second->lastThoughtRelevancies[i]);
+			}
+		}
+	}
+	return toReturn;
+}
+
 bool Server::org_update() {
 	if (ORG_LIST.size() == 0) {
 		return false;
@@ -68,7 +85,9 @@ void Server::server_update(){
 			ORG_LIST[currUpdate.senderID]->healing(currUpdate.amount);
 		}
 		else if (currUpdate.action == "Attack") {
-			ORG_LIST[currUpdate.targetID]->injury(currUpdate.amount);
+			if (ORG_LIST.find(currUpdate.targetID) != ORG_LIST.end()) {
+				ORG_LIST[currUpdate.targetID]->injury(currUpdate.amount);
+			}
 		}
 		else if (currUpdate.action == "MatingOn") {
 			mateable[currUpdate.senderID] = { currUpdate.newX, currUpdate.newY };
@@ -98,6 +117,7 @@ void Server::server_update(){
 		ORG_LIST[currUpdate.senderID]->receiveUpdate(servUpdate);
 	}
 
+	//MATING
 	std::vector<int> alreadyMated;
 	//For every org with mating toggled on...
 	for (auto parent1 : mateable) {
@@ -124,11 +144,12 @@ void Server::server_update(){
 			}
 		}
 	}
+	
 }
 
 
 std::string Server::recombineDNA(std::string parent1, std::string parent2) {
-	std::cout << "Mating is happening!!!" << std::endl;
+	//std::cout << "Mating is happening!!!" << std::endl;
 	std::string childDNA = "";
 	int mutation_chance = 10000;
 	int mutationType = rand() % 3;
@@ -266,7 +287,7 @@ void Server::addOrg(int initX, int initY, std::string initDNA) {
 void Server::killOrg(int x, int y, int id, int size){
 	mateable.erase(id);
 	E->remOrg(id);
-	E->changeFood(x, y, size);
+	E->changeFood(x, y, (size*12)+10);
 	delete ORG_LIST[id];
 	ORG_LIST.erase(id);
 }

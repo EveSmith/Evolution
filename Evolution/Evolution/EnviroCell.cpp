@@ -5,6 +5,7 @@
 
 Cell::Cell(){
 	food = rand() % 100;
+	replenishRate = 50 + (rand() % 100);
 }
 
 
@@ -72,5 +73,11 @@ void Cell::modifyFood(int delta){
 	food += delta;
 	if (food < 0) {
 		food = 0;
+	}
+}
+
+void Cell::randomReplenish() {
+	if (rand() % replenishRate == 0) {
+		food += 10;
 	}
 }
