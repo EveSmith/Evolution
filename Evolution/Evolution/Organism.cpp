@@ -451,13 +451,13 @@ void Organism::eat(){
 
 void Organism::attack(int targetID){
 	if (targetID == -1) {
-		std::cout << "Organism tried to attack, but nothing was there." << std::endl;
+		//std::cout << "Organism tried to attack, but nothing was there." << std::endl;
 		return;
 	}
 	pendingOrgUpdate.action = "Attack";
 	pendingOrgUpdate.targetID = targetID;
 	pendingOrgUpdate.amount = (traits.Size*2)+5;
-	std::cout << "Organism is attacking organism " << targetID << " (" << pendingOrgUpdate.amount << ")" << std::endl;
+	//std::cout << "Organism is attacking organism " << targetID << " (" << pendingOrgUpdate.amount << ")" << std::endl;
 }
 
 void Organism::move(int deltaX, int deltaY) {

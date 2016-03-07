@@ -39,11 +39,11 @@ int main(){
 	int SEED = time(NULL);
 	srand(SEED);
 
-	int WIDTH = 5;
-	int HEIGHT = 5;
-	int INIT_SIZE = 0;
-	int ITERATIONS = 10;
-	int GENOME_LENGTH = 10;
+	int WIDTH = 100;
+	int HEIGHT = 100;
+	int INIT_SIZE = 100;
+	int ITERATIONS = 10000;
+	int GENOME_LENGTH = 100000;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
 	Data_Compiler* dataCompiler = new Data_Compiler(server);
@@ -76,7 +76,7 @@ int main(){
 		server->server_update();
 		dataCompiler->updateInfo();
 
-		stepByStep(server, input);
+		//stepByStep(server, input);
 
 	}
 	std::cout << dataCompiler->printThoughts() << std::endl;
