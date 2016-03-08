@@ -15,8 +15,10 @@ public:
 
 	std::string printThoughts();
 	void exportThoughts();
+	void exportStates();
 private:
 	Server* server;
+	std::vector<State> STATES;
 	std::vector<Intel> THOUGHTS;
 	std::vector<int> THOUGHT_RELEVANCE;
 	std::vector<std::pair<Intel, int>> MOST_ACTED_ON;

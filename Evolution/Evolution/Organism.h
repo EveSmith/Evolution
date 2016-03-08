@@ -37,7 +37,7 @@ public:
 	void updateSelf();
 
 	//Last relevant thoughts
-	std::vector<Intel> lastRelevantThoughts; //Thoughts
+	std::vector<Intel> lastThoughts; //Thoughts
 	std::vector<int> lastThoughtRelevancies; //Corresponding relevancies
 private:
 	int ID;

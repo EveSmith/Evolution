@@ -39,11 +39,11 @@ int main(){
 	int SEED = time(NULL);
 	srand(SEED);
 
-	int WIDTH = 100;
-	int HEIGHT = 100;
-	int INIT_SIZE = 100;
-	int ITERATIONS = 10000;
-	int GENOME_LENGTH = 100000;
+	int WIDTH = 50;
+	int HEIGHT = 50;
+	int INIT_SIZE = 250;
+	int ITERATIONS = 100;
+	int GENOME_LENGTH = 100;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
 	Data_Compiler* dataCompiler = new Data_Compiler(server);
@@ -55,11 +55,11 @@ int main(){
 
 	std::string dna1 = "000100" + generateIntel(0, 1, 7, 5, 7);
 	std::string dna2 = "000100" + generateIntel(0, 1, 0, 0, 7);
-	server->addOrg(3, 3, dna1);
-	server->addOrg(2, 3, dna2);
-	server->addOrg(3, 1, dna2);
-	server->addOrg(0, 2, dna2);
-	server->addOrg(3, 3, dna2);
+	//server->addOrg(3, 3, dna1);
+	//server->addOrg(2, 3, dna2);
+	//server->addOrg(3, 1, dna2);
+	//server->addOrg(0, 2, dna2);
+	//server->addOrg(3, 3, dna2);
 
 	
 
@@ -77,9 +77,9 @@ int main(){
 		dataCompiler->updateInfo();
 
 		//stepByStep(server, input);
-
+		std::cout << "Completed iteration " << i << std::endl;
 	}
-	std::cout << dataCompiler->printThoughts() << std::endl;
+	//std::cout << dataCompiler->printThoughts() << std::endl;
 	if (iterationOfDeath > 0) {
 		std::cout << std::endl;
 		std::cout << "All life has died out." << std::endl;
@@ -87,6 +87,8 @@ int main(){
 	}
 	dataCompiler->exportThoughts();
 	std::cout << "Exported thought info to 'thoughts.csv'." << std::endl;
+	dataCompiler->exportStates();
+	std::cout << "Exported state info to 'states.csv'." << std::endl;
 	std::cout << "Press any key to close...";
 	std::cin >> input;
 	

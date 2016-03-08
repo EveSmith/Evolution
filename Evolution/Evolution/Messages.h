@@ -5,7 +5,6 @@
 #include <map>
 #include <array>
 
-
 //Type sent from organism to server to request some action.
 struct OrgUpdate{
 	int senderID; //Unique ID number
@@ -69,6 +68,7 @@ struct Traits {
 	bool Mateable;
 	bool Newborn;
 	int Age = 0;
+	int MaxAge;
 };
 
 
@@ -77,6 +77,13 @@ struct ServerUpdate {
 	bool checked;
 	int newX, newY;
 	Surroundings surroundings;
+};
+
+
+//Compiled State stats
+struct State {
+	int population = 0;
+	float avgHealth = 0;
 };
 
 #endif //MESSAGES_H

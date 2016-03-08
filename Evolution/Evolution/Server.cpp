@@ -39,20 +39,39 @@ std::string Server::printOrgList() {
 }
 
 std::pair<std::vector<Intel>, std::vector<int>> Server::getThoughtRelevancies() {
+	//Generates thought relevancies ONLY OF THE LAST ITERATION!!
 	std::pair<std::vector<Intel>, std::vector<int>> toReturn;
+	//For every organism...
 	for (auto org : ORG_LIST) {
-		for (int i = 0; i < org.second->lastRelevantThoughts.size(); i++) {
-			auto it = std::find(toReturn.first.begin(), toReturn.first.end(), org.second->lastRelevantThoughts[i]);
+		//For every thought that organism just had...
+		for (int i = 0; i < org.second->lastThoughts.size(); i++) {
+			//Does toReturn already have that thought?
+			auto it = std::find(toReturn.first.begin(), toReturn.first.end(), org.second->lastThoughts[i]);
+			//If yes...
 			if (it != toReturn.first.end()) {
+				//Add new relevance to that thought
 				toReturn.second[it - toReturn.first.begin()] += org.second->lastThoughtRelevancies[i];
 			}
+			//If not...
 			else {
-				toReturn.first.push_back(org.second->lastRelevantThoughts[i]);
+				//Append that thought to toReturn
+				toReturn.first.push_back(org.second->lastThoughts[i]);
 				toReturn.second.push_back(org.second->lastThoughtRelevancies[i]);
 			}
 		}
 	}
 	return toReturn;
+}
+
+State Server::getState() {
+	State s;
+	s.population = ORG_LIST.size();
+	int i = 1;
+	for (auto org : ORG_LIST) {
+		s.avgHealth = s.avgHealth + ((org.second->getTraits().Health - s.avgHealth) / i);
+		i++;
+	}
+	return s;
 }
 
 bool Server::org_update() {

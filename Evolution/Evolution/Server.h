@@ -21,6 +21,7 @@ public:
 	std::string printEnviron(bool grid=true);
 	std::string printOrgList();
 	std::pair<std::vector<Intel>,std::vector<int>> getThoughtRelevancies();
+	State getState();
 
 	bool org_update();
 	void server_update();

@@ -86,6 +86,7 @@ Traits parse_traits(std::string dna) {
 	traits.Health = 100;
 	traits.Color = bin_to_int(dna.substr(0, 3));
 	traits.Size = bin_to_int(dna.substr(3, 3));
+	traits.MaxAge = 100 + (10 * bin_to_int(dna.substr(6, 3)));
 	return traits;
 }
 
@@ -102,7 +103,7 @@ Organism::Organism(int w, int h){
 
 	//Generate some binary DNA
 	DNA = "";
-	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*1)+6; i++){
+	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*1)+9; i++){
 		DNA.append(std::to_string(rand() % 2));
 	}
 	this->knowledge = dna_to_knowledge(DNA);
@@ -208,7 +209,7 @@ void Organism::updateSelf(){
 	pendingOrgUpdate.senderID = ID;
 	traits.Health -= traits.Size+5;
 
-	if (traits.Health <= 0) {
+	if (traits.Health <= 0 || traits.Age == traits.MaxAge) {
 		pendingOrgUpdate.alive = false;
 	}
 
@@ -406,12 +407,12 @@ void Organism::reason(){
 			action_ratings[full_action] += current_location_action_ratings[j].first;
 		}
 		//Store relevant thoughts
-		auto it = std::find(lastRelevantThoughts.begin(), lastRelevantThoughts.end(), knowledge[i]);
-		if (it != lastRelevantThoughts.end()) {
-			lastThoughtRelevancies[it - lastRelevantThoughts.begin()] += 1;
+		auto it = std::find(lastThoughts.begin(), lastThoughts.end(), knowledge[i]);
+		if (it != lastThoughts.end()) {
+			lastThoughtRelevancies[it - lastThoughts.begin()] += 1;
 		}
 		else {
-			lastRelevantThoughts.push_back(knowledge[i]);
+			lastThoughts.push_back(knowledge[i]);
 			lastThoughtRelevancies.push_back(1);
 		}
 	}
