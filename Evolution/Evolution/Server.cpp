@@ -98,13 +98,26 @@ void Server::server_update(){
 			SERVER_INBOX.pop();
 			continue;
 		}
-
+		//If Org has chosen no action...
+		else if (currUpdate.action == "Idle") {
+			//and org is open to mating...
+			if (mateable.count(currUpdate.senderID) > 0) {
+				//add org to the list of orgs who might mate this turn
+				to_mate[currUpdate.senderID] = { currUpdate.newX, currUpdate.newY };
+			}
+		}
+		//If org has chosen to eat...
 		else if (currUpdate.action == "Eat") {
+			//change the amount of food on that square
 			E->changeFood(currUpdate.oldX, currUpdate.oldY, currUpdate.amount);
+			//and heal the org for the amount specified
 			ORG_LIST[currUpdate.senderID]->healing(currUpdate.amount);
 		}
+		//If org has chosen to attack...
 		else if (currUpdate.action == "Attack") {
+			//and if the target of the attack exists...
 			if (ORG_LIST.find(currUpdate.targetID) != ORG_LIST.end()) {
+				//Injure the target org by the amount specified
 				ORG_LIST[currUpdate.targetID]->injury(currUpdate.amount);
 			}
 		}
@@ -138,10 +151,10 @@ void Server::server_update(){
 
 	//MATING
 	std::vector<int> alreadyMated;
-	//For every org with mating toggled on...
-	for (auto parent1 : mateable) {
-		//Look at every other org with mating toggled on...
-		for (auto parent2 : mateable) {
+	//For every org with mating toggled on and who idled this turn...
+	for (auto parent1 : to_mate) {
+		//Look at every other org with mating toggled on and who idled this turn...
+		for (auto parent2 : to_mate) {
 			//Check if either has already mated
 			auto p1 = std::find(alreadyMated.begin(), alreadyMated.end(), parent1.first);
 			auto p2 = std::find(alreadyMated.begin(), alreadyMated.end(), parent2.first);
@@ -163,12 +176,14 @@ void Server::server_update(){
 			}
 		}
 	}
-	
+	//Empty to_mate, because the orgs will be re-added if they idle next turn.
+	to_mate.clear();
+
 }
 
 
 std::string Server::recombineDNA(std::string parent1, std::string parent2) {
-	//std::cout << "Mating is happening!!!" << std::endl;
+	std::cout << "Mating is happening!!!" << std::endl;
 	std::string childDNA = "";
 	int mutation_chance = 10000;
 	int mutationType = rand() % 3;

@@ -39,11 +39,11 @@ int main(){
 	int SEED = time(NULL);
 	srand(SEED);
 
-	int WIDTH = 10;
-	int HEIGHT = 10;
-	int INIT_SIZE = 100;
-	int ITERATIONS = 100;
-	int GENOME_LENGTH = 100;
+	int WIDTH = 20;
+	int HEIGHT = 20;
+	int INIT_SIZE = 500;
+	int ITERATIONS = 500;
+	int GENOME_LENGTH = 100000;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
 	Data_Compiler* dataCompiler = new Data_Compiler(server);

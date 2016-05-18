@@ -4,8 +4,8 @@
 #include <stdexcept>
 
 Cell::Cell(){
-	food = rand() % 100;
-	replenishRate = 50 + (rand() % 100);
+	food = rand() % 10;
+	replenishRate = 5 + (rand() % 10);
 }
 
 

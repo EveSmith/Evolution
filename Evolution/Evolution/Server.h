@@ -38,6 +38,7 @@ private:
 	std::queue<OrgUpdate> SERVER_INBOX;
 	std::map<int, Organism*> ORG_LIST;
 	std::map<int, std::array<int, 2>> mateable;
+	std::map<int, std::array<int, 2>> to_mate;
 	
 };
 
