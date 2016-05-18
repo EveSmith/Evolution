@@ -152,9 +152,9 @@ void Server::server_update(){
 	//MATING
 	std::vector<int> alreadyMated;
 	//For every org with mating toggled on and who idled this turn...
-	for (auto parent1 : to_mate) {
+	for (auto parent1 : mateable) {
 		//Look at every other org with mating toggled on and who idled this turn...
-		for (auto parent2 : to_mate) {
+		for (auto parent2 : mateable) {
 			//Check if either has already mated
 			auto p1 = std::find(alreadyMated.begin(), alreadyMated.end(), parent1.first);
 			auto p2 = std::find(alreadyMated.begin(), alreadyMated.end(), parent2.first);

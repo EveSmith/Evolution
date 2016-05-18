@@ -42,7 +42,7 @@ int main(){
 	int WIDTH = 20;
 	int HEIGHT = 20;
 	int INIT_SIZE = 500;
-	int ITERATIONS = 500;
+	int ITERATIONS = 20;
 	int GENOME_LENGTH = 100000;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE);
