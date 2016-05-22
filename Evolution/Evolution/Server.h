@@ -15,7 +15,7 @@ track and resolves conflicts.
 */
 class Server{
 public:
-	Server(int WIDTH, int HEIGHT, int INIT_SIZE);
+	Server(int WIDTH, int HEIGHT, int INIT_SIZE, int GENOME_LENGTH);
 	~Server();
 
 	std::string printEnviron(bool grid=true);
@@ -33,7 +33,7 @@ public:
 	void killOrg(int x, int y, int id, int size);
 
 private:
-	int width, height;
+	int width, height,genome_length;
 	Environment* E;
 	std::queue<OrgUpdate> SERVER_INBOX;
 	std::map<int, Organism*> ORG_LIST;

@@ -6,6 +6,11 @@ Data_Compiler::Data_Compiler(Server* s) {
 	server = s;
 }
 
+Data_Compiler::~Data_Compiler() {
+	exportStates();
+	exportThoughts();
+}
+
 void Data_Compiler::updateInfo() {
 	std::pair<std::vector<Intel>, std::vector<int>> thoughtInfo = server->getThoughtRelevancies();
 	//For every thought that was thought(?) last iteration...

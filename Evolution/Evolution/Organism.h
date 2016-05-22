@@ -14,7 +14,7 @@ Traits parse_traits(std::string dna);
 class Organism{
 public:
 	//Generates DNA, spawns organism from the void
-	Organism(int w, int h);
+	Organism(int w, int h, int genome_length);
 	Organism(int w, int h, int initX, int initY, std::string initDNA);
 
 	std::string print();

@@ -10,6 +10,7 @@
 class Data_Compiler {
 public:
 	Data_Compiler(Server* s);
+	~Data_Compiler();
 
 	void updateInfo();
 

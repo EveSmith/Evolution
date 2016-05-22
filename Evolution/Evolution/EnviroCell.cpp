@@ -78,6 +78,6 @@ void Cell::modifyFood(int delta){
 
 void Cell::randomReplenish() {
 	if (rand() % replenishRate == 0) {
-		food += 10;
+		food += 3;
 	}
 }

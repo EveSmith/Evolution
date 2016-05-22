@@ -83,10 +83,10 @@ Traits parse_traits(std::string dna) {
 	Traits traits;
 	traits.Mateable = false;
 	traits.Newborn = true;
-	traits.Health = 100;
 	traits.Color = bin_to_int(dna.substr(0, 3));
 	traits.Size = bin_to_int(dna.substr(3, 3));
-	traits.MaxAge = 100 + (10 * bin_to_int(dna.substr(6, 3)));
+	traits.MaxAge = 10 + (10 * bin_to_int(dna.substr(6, 3)));
+	traits.Health = 10+traits.Size;
 	return traits;
 }
 
@@ -96,14 +96,14 @@ Organism handles:
 	Health -- Server does not need to know health of organisms
 */
 
-Organism::Organism(int w, int h){
+Organism::Organism(int w, int h, int genome_length){
 	//Unique ID for each organism, hopefully.
 	this->ID = UNIVERSAL_ID;
 	UNIVERSAL_ID++;
 
 	//Generate some binary DNA
 	DNA = "";
-	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*1)+9; i++){
+	for (int i = 0; i < (GENE_LENGTH*INTEL_LENGTH*genome_length)+9; i++){
 		DNA.append(std::to_string(rand() % 2));
 	}
 	this->knowledge = dna_to_knowledge(DNA);
@@ -207,7 +207,7 @@ void Organism::sendUpdate(std::queue<OrgUpdate>& inbox){
 
 void Organism::updateSelf(){
 	pendingOrgUpdate.senderID = ID;
-	traits.Health -= traits.Size+5;
+	traits.Health -= traits.Size+1;
 
 	if (traits.Health <= 0 || traits.Age == traits.MaxAge) {
 		pendingOrgUpdate.alive = false;

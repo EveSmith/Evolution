@@ -4,10 +4,11 @@
 
 
 
-Server::Server(int WIDTH, int HEIGHT, int INIT_SIZE){
+Server::Server(int WIDTH, int HEIGHT, int INIT_SIZE, int GENOME_LENGTH){
 	E = new Environment(WIDTH, HEIGHT);
 	width = WIDTH;
 	height = HEIGHT;
+	genome_length = GENOME_LENGTH;
 	for (int i = 0; i < INIT_SIZE; i++) {
 		addOrg();
 	}
@@ -191,9 +192,15 @@ std::string Server::recombineDNA(std::string parent1, std::string parent2) {
 	try {
 		while(true) {
 			if (rand() % 2 == 0) { //MIGHT DECREASE DNA LENGTH OVER TIME
+				if (i >= parent1.length()) {
+					break;
+				}
 				childDNA += parent1.at(i);
 			}
 			else {
+				if (i >= parent2.length()) {
+					break;
+				}
 				childDNA += parent2.at(i);
 			}
 			//Mutation
@@ -304,7 +311,7 @@ Surroundings Server::compileSurroundings(int ID, int x, int y) {
 
 
 void Server::addOrg(){
-	Organism* org = new Organism(width, height);
+	Organism* org = new Organism(width, height, genome_length);
 	ORG_LIST[org->getID()] = org;
 	E->addOrg(org->getID(), org->getX(), org->getY());
 	ORG_LIST[org->getID()]->setSurroundings(compileSurroundings(org->getID(), org->getX(), org->getY()));
