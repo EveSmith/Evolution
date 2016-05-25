@@ -69,6 +69,7 @@ struct Traits {
 	bool Newborn;
 	int Age = 0;
 	int MaxAge;
+	int Hunger;
 };
 
 
@@ -84,6 +85,10 @@ struct ServerUpdate {
 struct State {
 	int population = 0;
 	float avgHealth = 0;
+};
+
+struct Actions {
+	int idle,eat,attack,move,mating_on,mating_off; //action counts
 };
 
 #endif //MESSAGES_H

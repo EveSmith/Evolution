@@ -22,6 +22,7 @@ public:
 	std::string printOrgList();
 	std::pair<std::vector<Intel>,std::vector<int>> getThoughtRelevancies();
 	State getState();
+	Actions getActionsCount();
 
 	bool org_update();
 	void server_update();
@@ -33,13 +34,12 @@ public:
 	void killOrg(int x, int y, int id, int size);
 
 private:
-	int width, height,genome_length;
+	int width, height,genome_length, square_capacity;
 	Environment* E;
 	std::queue<OrgUpdate> SERVER_INBOX;
 	std::map<int, Organism*> ORG_LIST;
 	std::map<int, std::array<int, 2>> mateable;
-	std::map<int, std::array<int, 2>> to_mate;
-	
+	Actions current_actions_count;
 };
 
 

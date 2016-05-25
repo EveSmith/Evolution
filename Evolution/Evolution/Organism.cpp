@@ -85,8 +85,9 @@ Traits parse_traits(std::string dna) {
 	traits.Newborn = true;
 	traits.Color = bin_to_int(dna.substr(0, 3));
 	traits.Size = bin_to_int(dna.substr(3, 3));
-	traits.MaxAge = 10 + (10 * bin_to_int(dna.substr(6, 3)));
-	traits.Health = 10+traits.Size;
+	traits.MaxAge = ((1 + bin_to_int(dna.substr(6, 3))) * 10) + (rand() % 20);
+	traits.Health = 100;
+	traits.Hunger = (traits.Size + 1) * 4;
 	return traits;
 }
 
@@ -207,7 +208,8 @@ void Organism::sendUpdate(std::queue<OrgUpdate>& inbox){
 
 void Organism::updateSelf(){
 	pendingOrgUpdate.senderID = ID;
-	traits.Health -= traits.Size+1;
+	//Get hungry
+	traits.Health -= traits.Hunger;
 
 	if (traits.Health <= 0 || traits.Age == traits.MaxAge) {
 		pendingOrgUpdate.alive = false;
@@ -447,7 +449,7 @@ void Organism::idle() {
 void Organism::eat(){
 	//std::cout << "Organism is eating ("<< 5 << ")" << std::endl;
 	pendingOrgUpdate.action = "Eat";
-	pendingOrgUpdate.amount = 5;
+	pendingOrgUpdate.amount = traits.Hunger;
 }
 
 void Organism::attack(int targetID){

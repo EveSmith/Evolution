@@ -41,9 +41,9 @@ int main(){
 
 	int WIDTH = 10;
 	int HEIGHT = 10;
-	int INIT_SIZE = 500;
+	int INIT_SIZE = 100;
 	int ITERATIONS = 100;
-	int GENOME_LENGTH = 3;
+	int GENOME_LENGTH = 10;
 
 	Server* server = new Server(WIDTH, HEIGHT, INIT_SIZE, GENOME_LENGTH);
 	Data_Compiler* dataCompiler = new Data_Compiler(server);
@@ -89,6 +89,8 @@ int main(){
 	std::cout << "Exported thought info to 'thoughts.csv'." << std::endl;
 	dataCompiler->exportStates();
 	std::cout << "Exported state info to 'states.csv'." << std::endl;
+	dataCompiler->exportActions();
+	std::cout << "Exported action counts to 'actions.csv'." << std::endl;
 	std::cout << "Press any key to close...";
 	std::cin >> input;
 	

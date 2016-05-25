@@ -9,6 +9,7 @@ Server::Server(int WIDTH, int HEIGHT, int INIT_SIZE, int GENOME_LENGTH){
 	width = WIDTH;
 	height = HEIGHT;
 	genome_length = GENOME_LENGTH;
+	square_capacity = 5;
 	for (int i = 0; i < INIT_SIZE; i++) {
 		addOrg();
 	}
@@ -75,6 +76,10 @@ State Server::getState() {
 	return s;
 }
 
+Actions Server::getActionsCount() {
+	return current_actions_count;
+}
+
 bool Server::org_update() {
 	if (ORG_LIST.size() == 0) {
 		return false;
@@ -87,6 +92,7 @@ bool Server::org_update() {
 }
 
 void Server::server_update(){
+	current_actions_count = { 0,0,0,0,0 };
 	OrgUpdate currUpdate;
 	ServerUpdate servUpdate;
 	//For all the messages in inbox...
@@ -101,18 +107,15 @@ void Server::server_update(){
 		}
 		//If Org has chosen no action...
 		else if (currUpdate.action == "Idle") {
-			//and org is open to mating...
-			if (mateable.count(currUpdate.senderID) > 0) {
-				//add org to the list of orgs who might mate this turn
-				to_mate[currUpdate.senderID] = { currUpdate.newX, currUpdate.newY };
-			}
+			current_actions_count.idle++;
 		}
 		//If org has chosen to eat...
 		else if (currUpdate.action == "Eat") {
 			//change the amount of food on that square
-			E->changeFood(currUpdate.oldX, currUpdate.oldY, currUpdate.amount);
+			E->changeFood(currUpdate.oldX, currUpdate.oldY, -currUpdate.amount);
 			//and heal the org for the amount specified
 			ORG_LIST[currUpdate.senderID]->healing(currUpdate.amount);
+			current_actions_count.eat++;
 		}
 		//If org has chosen to attack...
 		else if (currUpdate.action == "Attack") {
@@ -121,18 +124,22 @@ void Server::server_update(){
 				//Injure the target org by the amount specified
 				ORG_LIST[currUpdate.targetID]->injury(currUpdate.amount);
 			}
+			current_actions_count.attack++;
 		}
 		else if (currUpdate.action == "MatingOn") {
 			mateable[currUpdate.senderID] = { currUpdate.newX, currUpdate.newY };
+			current_actions_count.mating_on++;
 		}
 		else if (currUpdate.action == "MatingOff") {
 			mateable.erase(currUpdate.senderID);
+			current_actions_count.mating_off++;
 		}
 		else if (currUpdate.action == "Move") {
 			E->moveOrg(currUpdate.senderID, currUpdate.oldX, currUpdate.oldY, currUpdate.newX, currUpdate.newY);
 			if (mateable.count(currUpdate.senderID) > 0) {
 				mateable[currUpdate.senderID] = { currUpdate.newX, currUpdate.newY };
 			}
+			current_actions_count.move++;
 		}
 
 
@@ -166,20 +173,23 @@ void Server::server_update(){
 					//Create a new organism nearby that has their combined DNA.
 					int randtemp = rand() % 4;
 					std::array<int, 2> childpos = parent1.second;
-					if (randtemp == 0 && childpos[0] != width-1) { childpos[0]++; }
+					if (randtemp == 0 && childpos[0] != width - 1) { childpos[0]++; }
 					else if (randtemp == 1 && childpos[0] != 0) { childpos[0]--; }
-					else if (randtemp == 2 && childpos[1] != height-1) { childpos[1]++; }
+					else if (randtemp == 2 && childpos[1] != height - 1) { childpos[1]++; }
 					else if (randtemp == 3 && childpos[1] != 0) { childpos[1]--; }
-					addOrg(childpos[0],childpos[1], recombineDNA(ORG_LIST[parent1.first]->getDNA(), ORG_LIST[parent2.first]->getDNA()));
+					//If the square we were going to put child on is full, don't allow organism to be born.
+					if (E->countOrgs(childpos[0], childpos[1]) >= square_capacity) {
+						continue;
+						alreadyMated.push_back(parent1.first);
+						alreadyMated.push_back(parent2.first);
+					}
+					addOrg(childpos[0], childpos[1], recombineDNA(ORG_LIST[parent1.first]->getDNA(), ORG_LIST[parent2.first]->getDNA()));
 					alreadyMated.push_back(parent1.first);
 					alreadyMated.push_back(parent2.first);
 				}
 			}
 		}
 	}
-	//Empty to_mate, because the orgs will be re-added if they idle next turn.
-	to_mate.clear();
-
 }
 
 
@@ -328,7 +338,7 @@ void Server::addOrg(int initX, int initY, std::string initDNA) {
 void Server::killOrg(int x, int y, int id, int size){
 	mateable.erase(id);
 	E->remOrg(id);
-	E->changeFood(x, y, (size*12)+10);
+	E->changeFood(x, y, (size*4)+1);
 	delete ORG_LIST[id];
 	ORG_LIST.erase(id);
 }

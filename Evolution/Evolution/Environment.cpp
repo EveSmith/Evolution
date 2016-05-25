@@ -66,7 +66,6 @@ std::string Environment::printGrid(){
 }
 
 //Returns matrix index of specified organism (not in coordinate form)
-//VERY SLOW!!! OPTIMIZE LATER!!!
 int Environment::findOrg(int id){
 	for (int i = 0; i < matrix.size(); i++){
 		if (matrix[i]->containsOrg(id)){
@@ -75,7 +74,6 @@ int Environment::findOrg(int id){
 	}
 	return -1;
 }
-
 
 
 //Put the ID of the organism into the specified Cell
@@ -111,6 +109,13 @@ std::vector<int> Environment::getOrgs(int x, int y) {
 
 std::vector<int> Environment::getOrgs(int index) {
 	return matrix[index]->getOrgs();
+}
+
+int Environment::countOrgs(int x, int y) {
+	return matrix[y*width + x]->countOrgs();
+}
+int Environment::countOrgs(int index) {
+	return matrix[index]->countOrgs();
 }
 
 //Gets specific resource amount for a cell

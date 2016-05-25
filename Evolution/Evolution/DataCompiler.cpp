@@ -9,6 +9,7 @@ Data_Compiler::Data_Compiler(Server* s) {
 Data_Compiler::~Data_Compiler() {
 	exportStates();
 	exportThoughts();
+	exportActions();
 }
 
 void Data_Compiler::updateInfo() {
@@ -29,8 +30,8 @@ void Data_Compiler::updateInfo() {
 			THOUGHT_RELEVANCE.push_back(thoughtInfo.second[i]);
 		}
 	}
-
 	STATES.push_back(server->getState());
+	ACTIONS.push_back(server->getActionsCount());
 }
 
 std::string Data_Compiler::printThoughts() {
@@ -68,4 +69,20 @@ void Data_Compiler::exportStates() {
 		stateOutput << STATES[i].population << "," << STATES[i].avgHealth << std::endl;
 	}
 	stateOutput.close();
+}
+
+void Data_Compiler::exportActions() {
+	std::ofstream actionOutput;
+	actionOutput.open("actions.csv");
+	actionOutput << "Iteration,Idle,Eat,Attack,Move,Mating On,Mating Off" << std::endl;
+	for (int i = 0; i < ACTIONS.size(); i++) {
+		int actionSum = ACTIONS[i].idle + ACTIONS[i].eat + ACTIONS[i].attack + ACTIONS[i].move + ACTIONS[i].mating_on + ACTIONS[i].mating_off;
+		actionOutput << std::to_string(i) << "," <<
+			std::to_string(float(ACTIONS[i].idle)/actionSum) << "," <<
+			std::to_string(float(ACTIONS[i].eat) / actionSum) << "," <<
+			std::to_string(float(ACTIONS[i].attack) / actionSum) << "," <<
+			std::to_string(float(ACTIONS[i].move) / actionSum) << "," <<
+			std::to_string(float(ACTIONS[i].mating_on) / actionSum) << "," <<
+			std::to_string(float(ACTIONS[i].mating_off) / actionSum) << "," << std::endl;
+	}
 }

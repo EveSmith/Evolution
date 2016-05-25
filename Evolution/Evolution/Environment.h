@@ -23,6 +23,8 @@ public:
 	void moveOrg(int id, int oldX, int oldY, int newX, int newY);
 	std::vector<int> getOrgs(int x, int y);
 	std::vector<int> getOrgs(int index);
+	int countOrgs(int x, int y);
+	int countOrgs(int index);
 
 	int getFood(int x, int y);
 	void changeFood(int x, int y, int delta);

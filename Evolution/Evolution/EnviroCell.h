@@ -15,11 +15,10 @@ public:
 
 	bool containsOrg(int id);
 	std::vector<int> getOrgs();
+	int countOrgs();
 	void insertOrg(int id);
 	void removeOrg(int id);
 
-
-	std::map<std::string, int> getResources();
 	int getFood();
 	void modifyFood(int delta);
 	void randomReplenish();

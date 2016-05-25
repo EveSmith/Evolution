@@ -46,6 +46,10 @@ std::vector<int> Cell::getOrgs() {
 	return orgsPresent;
 }
 
+int Cell::countOrgs() {
+	return orgsPresent.size();
+}
+
 //If org is not already present, add it.
 void Cell::insertOrg(int id){
 	std::vector<int>::iterator position = find(orgsPresent.begin(), orgsPresent.end(), id);
